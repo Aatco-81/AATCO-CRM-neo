@@ -292,7 +292,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
       </div>
       <table class="rtable">
         <thead><tr>
-          <th>العميل</th><th>الهاتف</th><th>المنطقة</th><th>نوع المبنى</th><th>الأدوار</th>
+          <th>العميل</th><th>الهاتف</th><th>الشخص المسؤول</th><th>المسمى الوظيفي</th>
+          <th>المدينة</th><th>العنوان</th><th>نوع المبنى</th><th>الأدوار</th>
           <th>الخدمة</th><th>المرحلة</th><th>الأولوية</th><th>إجراء المندوب</th>
           <th>نتيجة الزيارة</th><th>المندوب</th><th>القيمة (SR)</th>
         </tr></thead>
@@ -352,20 +353,32 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
         <div class="fg"><label>رقم الهاتف</label><input id="fph" placeholder="05xxxxxxxx"></div>
       </div>
       <div class="fr">
-        <div class="fg"><label>المنطقة</label>
-          <select id="freg"><option>جدة</option><option>الرياض</option><option>مكة المكرمة</option><option>المدينة المنورة</option><option>الدمام</option><option>الطائف</option><option>أخرى</option></select>
-        </div>
-        <div class="fg"><label>نوع المبنى</label>
-          <select id="fbt"><option>سكني</option><option>تجاري</option><option>طبي</option><option>حكومي</option><option>فندقي</option></select>
-        </div>
+        <div class="fg"><label>اسم الشخص المسؤول *</label><input id="fcname" placeholder="محمد أحمد..."></div>
+        <div class="fg"><label>المسمى الوظيفي</label><input id="fctitle" placeholder="مدير المشتريات..."></div>
       </div>
       <div class="fr">
+        <div class="fg"><label>المدينة</label>
+          <select id="freg"><option>جدة</option><option>الرياض</option><option>مكة المكرمة</option><option>المدينة المنورة</option><option>الدمام</option><option>الطائف</option><option>أخرى</option></select>
+        </div>
+        <div class="fg"><label>عنوان المبنى</label><input id="faddr" placeholder="حي الروضة، شارع الأمير..."></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>نوع المبنى</label>
+          <select id="fbt"><option>سكني</option><option>تجاري</option><option>طبي</option><option>حكومي</option><option>فندقي</option><option>فردي</option><option>مطعم</option></select>
+        </div>
         <div class="fg"><label>عدد الأدوار</label><input id="ffl" type="number" placeholder="8" min="1"></div>
+      </div>
+      <div class="fr">
         <div class="fg"><label>القيمة المتوقعة (SR)</label><input id="fval" type="number" placeholder="50000"></div>
+        <div class="fg"><label>&nbsp;</label></div>
       </div>
 
       <div class="st">نوع الخدمة</div>
-      <div class="fg"><select id="fsvc"><option>تركيب مصعد جديد</option><option>صيانة مصاعد</option><option>تجديد مصعد</option></select></div>
+      <div class="fg"><select id="fsvc">
+        <option>تركيب مصعد جديد</option>
+        <option>صيانة مصاعد</option>
+        <option>تجديد مصعد</option>
+      </select></div>
 
       <div class="st">أولوية الفرصة</div>
       <div class="po" id="popts">
@@ -602,7 +615,7 @@ function getAfter(container,y){
 function openNew(){
   document.getElementById('eid').value='';
   document.getElementById('mtitle').textContent='إضافة فرصة جديدة';
-  ['fn','fph','ffl','fval','fnotes'].forEach(id=>document.getElementById(id).value='');
+  ['fn','fph','fcname','fctitle','faddr','ffl','fval','fnotes'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('freg').value='جدة';document.getElementById('fbt').value='سكني';
   document.getElementById('fsvc').value='تركيب مصعد جديد';
   // populate rep dropdown based on role
@@ -640,7 +653,10 @@ function saveCard(){
   const d={
     id:eid||++idCtr,name,
     phone:document.getElementById('fph').value||'—',
+    cname:document.getElementById('fcname').value.trim()||'—',
+    ctitle:document.getElementById('fctitle').value.trim()||'—',
     region:document.getElementById('freg').value,
+    address:document.getElementById('faddr').value.trim()||'—',
     btype:document.getElementById('fbt').value,
     floors:document.getElementById('ffl').value||'—',
     value:document.getElementById('fval').value||'0',
@@ -693,6 +709,8 @@ function editCard(id){
   document.getElementById('eid').value=id;
   document.getElementById('mtitle').textContent='تعديل الفرصة';
   document.getElementById('fn').value=c.name;document.getElementById('fph').value=c.phone;
+  document.getElementById('fcname').value=c.cname||'';document.getElementById('fctitle').value=c.ctitle||'';
+  document.getElementById('faddr').value=c.address||'';
   document.getElementById('freg').value=c.region;document.getElementById('fbt').value=c.btype;
   document.getElementById('ffl').value=c.floors;document.getElementById('fval').value=c.value;
   document.getElementById('fsvc').value=c.service;document.getElementById('fnotes').value=c.notes||'';
@@ -796,16 +814,59 @@ function saveCfg(){
   s.textContent='✅ تم حفظ الرابط. سيتم مزامنة البيانات تلقائياً عند أي تغيير.';
   toast('تم حفظ إعدادات Google Sheets');
 }
-async function sync(card,action){
-  if(!sheetsUrl)return;
-  try{await fetch(sheetsUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,card})});}
-  catch(e){console.log('sync:',e);}
+async function sync(card, action){
+  if(!sheetsUrl) return;
+  // Show syncing indicator
+  showSyncStatus('syncing');
+  try {
+    await fetch(sheetsUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({action, card: {
+      id:card.id, name:card.name, phone:card.phone,
+      cname:card.cname||'', ctitle:card.ctitle||'',
+      region:card.region, address:card.address||'',
+      btype:card.btype, floors:card.floors,
+      service:card.service, col:card.col,
+      priority:card.priority, action:card.action||'',
+      result:card.result||'', notes:card.notes||'',
+      rep:card.rep, value:card.value||0, date:card.date||''
+    }})
+    });
+    showSyncStatus('ok');
+  } catch(e) {
+    showSyncStatus('err');
+    console.log('Sheets sync error:', e);
+  }
+}
+
+function showSyncStatus(status){
+  let el = document.getElementById('sync-status');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'sync-status';
+    el.style.cssText = 'position:fixed;bottom:60px;left:50%;transform:translateX(-50%);padding:6px 16px;border-radius:6px;font-size:12px;font-weight:600;z-index:998;transition:all 0.3s;font-family:Tajawal,sans-serif';
+    document.body.appendChild(el);
+  }
+  if(status==='syncing'){
+    el.style.background='#1a4a8a';el.style.color='white';el.style.opacity='1';
+    el.textContent='🔄 جاري المزامنة مع Google Sheets...';
+  } else if(status==='ok'){
+    el.style.background='#16a34a';el.style.color='white';el.style.opacity='1';
+    el.textContent='✅ تم الحفظ في Google Sheets';
+    setTimeout(()=>el.style.opacity='0', 2500);
+  } else {
+    el.style.background='#dc2626';el.style.color='white';el.style.opacity='1';
+    el.textContent='⚠️ تعذّر الحفظ في Sheets — البيانات محفوظة محلياً';
+    setTimeout(()=>el.style.opacity='0', 3500);
+  }
 }
 
 // EXPORT
 function exportCSV(){
-  const rows=[['العميل','الهاتف','المنطقة','نوع المبنى','الأدوار','الخدمة','المرحلة','الأولوية','إجراء المندوب','نتيجة الزيارة','الملاحظات','المندوب','القيمة']];
-  cards.forEach(c=>rows.push([c.name,c.phone,c.region,c.btype,c.floors,c.service,COLS[c.col],c.priority.toUpperCase(),c.action||'',c.result||'',c.notes||'',c.rep,c.value||'']));
+  const rows=[['العميل','الهاتف','الشخص المسؤول','المسمى الوظيفي','المدينة','العنوان','نوع المبنى','الأدوار','الخدمة','المرحلة','الأولوية','إجراء المندوب','نتيجة الزيارة','الملاحظات','المندوب','القيمة']];
+  cards.forEach(c=>rows.push([c.name,c.phone,c.cname||'',c.ctitle||'',c.region,c.address||'',c.btype,c.floors,c.service,COLS[c.col],c.priority.toUpperCase(),c.action||'',c.result||'',c.notes||'',c.rep,c.value||'']));
   const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
   a.download=`AATCO_Report_${new Date().toLocaleDateString('ar-SA').replace(/\//g,'-')}.csv`;a.click();
