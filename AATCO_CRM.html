@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AATCO Elevators — CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #1a4a8a; --primary-dark: #123570; --primary-light: #e8f0fb;
+  --accent: #2563c7; --bg: #f0f4fa; --surface: #ffffff;
+  --border: #dde4f0; --text: #1a2340; --text-muted: #6b7a9a;
+  --p1: #dc2626; --p1-bg: #fef2f2; --p1-border: #fca5a5;
+  --p2: #ea7c1a; --p2-bg: #fff7ed; --p2-border: #fdba74;
+  --p3: #ca9e00; --p3-bg: #fefce8; --p3-border: #fde047;
+  --p4: #2563c7; --p4-bg: #eff6ff; --p4-border: #93c5fd;
+  --won: #16a34a; --radius: 10px; --shadow: 0 2px 12px rgba(26,74,138,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a4a8a,#2563c7)}
+.login-box{background:white;border-radius:16px;padding:40px 36px;width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo .li{font-size:48px;display:block;margin-bottom:8px}
+.login-logo h1{font-size:22px;font-weight:700;color:var(--primary)}
+.login-logo p{font-size:13px;color:var(--text-muted);margin-top:4px}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'Tajawal',sans-serif;color:var(--text);background:white;outline:none;transition:border-color 0.2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
+.btn-primary{width:100%;padding:12px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer;transition:background 0.2s}
+.btn-primary:hover{background:var(--primary-dark)}
+.login-err{color:#dc2626;font-size:13px;text-align:center;margin-top:10px;display:none}
+
+/* APP */
+#app{display:none;flex-direction:column;min-height:100vh}
+.topbar{background:var(--primary);color:white;padding:0 20px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+.tb-brand{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700}
+.tb-brand span{font-size:12px;opacity:.7;border-right:1px solid rgba(255,255,255,.3);padding-right:10px;margin-right:4px;font-weight:400}
+.tb-nav{display:flex;gap:4px}
+.nb{padding:6px 14px;border-radius:6px;font-size:13px;font-family:'Tajawal',sans-serif;font-weight:500;cursor:pointer;border:none;color:rgba(255,255,255,.8);background:transparent;transition:all .15s}
+.nb:hover,.nb.active{background:rgba(255,255,255,.15);color:white}
+.tb-user{display:flex;align-items:center;gap:8px;font-size:13px}
+.uav{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.btn-out{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:4px 10px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Tajawal',sans-serif}
+
+.page{display:none;flex:1}
+.page.active{display:block}
+
+/* KANBAN */
+.ktoolbar{background:white;border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.btn-add{background:var(--primary);color:white;border:none;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer;transition:background .2s}
+.btn-add:hover{background:var(--primary-dark)}
+.si{border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:13px;font-family:'Tajawal',sans-serif;outline:none;width:190px}
+.si:focus{border-color:var(--accent)}
+.fs{border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;font-size:13px;font-family:'Tajawal',sans-serif;outline:none;color:var(--text)}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:14px 20px;background:white;border-bottom:1px solid var(--border)}
+.kpi{background:var(--bg);border-radius:8px;padding:10px 14px}
+.kpi-label{font-size:11px;color:var(--text-muted);margin-bottom:4px}
+.kpi-value{font-size:20px;font-weight:700;color:var(--primary)}
+.board{display:flex;overflow-x:auto;padding:16px 20px;min-height:calc(100vh - 210px);align-items:flex-start;gap:0}
+.col{min-width:220px;max-width:220px;background:white;border-radius:var(--radius);border:1.5px solid var(--border);display:flex;flex-direction:column;margin-left:14px;box-shadow:var(--shadow);transition:border-color .2s,background .2s}
+.col.drag-over{border-color:var(--accent);background:var(--primary-light)}
+.col-head{padding:12px 14px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.col-title{font-size:13px;font-weight:700}
+.col-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--primary-light);color:var(--primary)}
+.col-bar{height:3px;margin:0 14px 8px;border-radius:2px}
+.cards{padding:6px 8px;display:flex;flex-direction:column;gap:8px;min-height:80px}
+
+/* CARD */
+.card{background:white;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;cursor:grab;transition:box-shadow .15s,opacity .15s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;right:0;top:0;bottom:0;width:4px}
+.card.p1::before{background:var(--p1)}
+.card.p2::before{background:var(--p2)}
+.card.p3::before{background:var(--p3)}
+.card.p4::before{background:var(--p4)}
+.card:hover{box-shadow:0 4px 16px rgba(26,74,138,.12)}
+.card.dragging{opacity:.35;cursor:grabbing}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
+.card-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.3}
+.csvc{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500;white-space:nowrap;margin-top:3px;display:inline-block}
+.sn{background:#eff6ff;color:#1d4ed8}.sm{background:#f0fdf4;color:#15803d}.sr{background:#fdf4ff;color:#7e22ce}
+.pb{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+.pb-p1{background:var(--p1-bg);color:var(--p1);border:1px solid var(--p1-border)}
+.pb-p2{background:var(--p2-bg);color:var(--p2);border:1px solid var(--p2-border)}
+.pb-p3{background:var(--p3-bg);color:var(--p3);border:1px solid var(--p3-border)}
+.pb-p4{background:var(--p4-bg);color:var(--p4);border:1px solid var(--p4-border)}
+.ci{font-size:11px;color:var(--text-muted);margin-bottom:3px}
+.cr{margin-top:7px;padding:5px 8px;border-radius:6px;font-size:11px;background:var(--bg);border-right:2px solid #ccc;color:var(--text-muted)}
+.cr.pos{border-color:var(--won)}.cr.pend{border-color:var(--p2)}.cr.neg{border-color:var(--p1)}
+.cf{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:7px;border-top:1px solid var(--border)}
+.cf span{font-size:10px;color:var(--text-muted)}
+.drop-ph{height:70px;border:2px dashed var(--accent);border-radius:8px;background:var(--primary-light);opacity:.5}
+
+/* OVERLAY & MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+.overlay.show{display:flex}
+.modal{background:white;border-radius:14px;width:520px;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2)}
+.mh{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:white;z-index:1}
+.mt{font-size:16px;font-weight:700;color:var(--primary)}
+.mc{font-size:22px;cursor:pointer;color:var(--text-muted);line-height:1}
+.mb{padding:20px}
+.st{font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.po{display:flex;gap:8px}
+.popt{flex:1;padding:8px 6px;border-radius:8px;border:2px solid var(--border);text-align:center;cursor:pointer;font-size:11px;font-weight:700;transition:all .15s}
+.popt.sel-p1{background:var(--p1-bg);border-color:var(--p1);color:var(--p1)}
+.popt.sel-p2{background:var(--p2-bg);border-color:var(--p2);color:var(--p2)}
+.popt.sel-p3{background:var(--p3-bg);border-color:var(--p3);color:var(--p3)}
+.popt.sel-p4{background:var(--p4-bg);border-color:var(--p4);color:var(--p4)}
+.popt .pd{font-size:9px;font-weight:400;margin-top:2px;opacity:.8}
+.acs{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid var(--border);color:var(--text-muted);font-family:'Tajawal',sans-serif;transition:all .15s}
+.chip.sel{background:var(--primary-light);border-color:var(--primary);color:var(--primary);font-weight:600}
+.rcs{display:flex;gap:8px}
+.rch{flex:1;padding:8px;border-radius:8px;font-size:12px;font-weight:600;text-align:center;cursor:pointer;border:1.5px solid var(--border);color:var(--text-muted);transition:all .15s}
+.rch.pos{background:#f0fdf4;border-color:var(--won);color:var(--won)}
+.rch.pend{background:var(--p2-bg);border-color:var(--p2);color:var(--p2)}
+.rch.neg{background:var(--p1-bg);border-color:var(--p1);color:var(--p1)}
+.btn-save{width:100%;padding:12px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer;margin-top:8px;transition:background .2s}
+.btn-save:hover{background:var(--primary-dark)}
+.mv-btn{padding:6px 12px;border-radius:6px;font-size:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-family:'Tajawal',sans-serif;transition:all .15s}
+.mv-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+
+/* REPORT */
+.report-page{padding:24px;max-width:1000px;margin:0 auto}
+.rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.rh h2{font-size:20px;font-weight:700;color:var(--primary)}
+.rtable{width:100%;border-collapse:collapse;background:white;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.rtable th{background:var(--primary);color:white;padding:12px 14px;font-size:13px;font-weight:600;text-align:right}
+.rtable td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border)}
+.rtable tr:last-child td{border-bottom:none}
+.rtable tr:hover td{background:var(--primary-light)}
+
+/* STATS */
+.stats-page{padding:24px;max-width:1000px;margin:0 auto}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.sc{background:white;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.sc-label{font-size:12px;color:var(--text-muted);margin-bottom:6px}
+.sc-val{font-size:28px;font-weight:700;color:var(--primary)}
+.rg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.rc{background:white;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.rn{font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.rav{width:32px;height:32px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.rs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rsv{background:var(--bg);border-radius:6px;padding:8px;text-align:center}
+.rsv-n{font-size:18px;font-weight:700;color:var(--primary)}
+.rsv-l{font-size:10px;color:var(--text-muted);margin-top:2px}
+.pb-wrap{background:white;border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:20px}
+.pb-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.pb-lbl{width:90px;font-size:12px;font-weight:700}
+.pb-bw{flex:1;background:var(--bg);border-radius:4px;height:12px;overflow:hidden}
+.pb-b{height:100%;border-radius:4px;transition:width .6s ease}
+.pb-n{font-size:12px;font-weight:600;width:24px}
+
+/* CONFIG */
+.config-page{padding:24px;max-width:600px;margin:0 auto}
+.cb{background:white;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.cs{padding:10px 14px;border-radius:8px;font-size:13px;margin-top:12px}
+.cs.ok{background:#f0fdf4;color:var(--won);border:1px solid #86efac}
+.cs.err{background:var(--p1-bg);color:var(--p1);border:1px solid var(--p1-border)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--primary);color:white;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <span class="li">🏢</span>
+      <h1>AATCO Elevators</h1>
+      <p>نظام إدارة علاقات العملاء</p>
+    </div>
+    <div class="fg">
+      <label>اسم المندوب</label>
+      <select id="lu">
+        <option value="">— اختر اسمك —</option>
+        <option>أحمد السعيد</option><option>محمد العمري</option>
+        <option>خالد الزهراني</option><option>سارة المالكي</option>
+        <option value="مدير النظام">مدير النظام</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>كلمة المرور</label>
+      <input type="password" id="lp" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-primary" onclick="doLogin()">دخول</button>
+    <div class="login-err" id="lerr">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+    <div style="margin-top:14px;font-size:11px;color:#aaa;text-align:center">المندوبين: 1234 &nbsp;|&nbsp; مدير النظام: admin &nbsp;|&nbsp; <span style="color:#1a4a8a;cursor:pointer" onclick="loadUsersFromSheets()">🔄 تحديث من Sheets</span></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="tb-brand">🏢 <span>AATCO Elevators</span> إدارة العملاء</div>
+    <div class="tb-nav">
+      <button class="nb active" onclick="showPage('kanban',this)">لوحة المبيعات</button>
+      <button class="nb" onclick="showPage('report',this)">التقرير اليومي</button>
+      <button class="nb" id="stats-btn" onclick="showPage('stats',this)" style="display:none">إحصائيات المدير</button>
+      <button class="nb" onclick="showPage('config',this)">ربط Google Sheets</button>
+    </div>
+    <div class="tb-user">
+      <div class="uav" id="uav">م</div>
+      <span id="uname"></span>
+      <button class="btn-out" onclick="doLogout()">خروج</button>
+    </div>
+  </div>
+
+  <!-- KANBAN -->
+  <div class="page active" id="page-kanban">
+    <div class="ktoolbar">
+      <button class="btn-add" onclick="openNew()">+ إضافة فرصة</button>
+      <input class="si" placeholder="🔍 بحث..." oninput="filterName(this.value)">
+      <select class="fs" onchange="filterP(this.value)">
+        <option value="">كل الأولويات</option>
+        <option value="p1">🔴 P1 — يُغلق خلال 3 أيام</option>
+        <option value="p2">🟠 P2 — 7-10 أيام</option>
+        <option value="p3">🟡 P3 — 14 يوم</option>
+        <option value="p4">🔵 P4 — متابعة مستمرة</option>
+      </select>
+      <select class="fs" onchange="filterSvc(this.value)">
+        <option value="">كل الخدمات</option>
+        <option>تركيب مصعد جديد</option>
+        <option>صيانة مصاعد</option>
+        <option>تجديد مصعد</option>
+      </select>
+      <select class="fs" id="rep-filter" onchange="filterRep(this.value)">
+        <option value="">كل المندوبين</option>
+      </select>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-label">إجمالي الفرص</div><div class="kpi-value" id="k-total">0</div></div>
+      <div class="kpi"><div class="kpi-label">🔴 P1 عاجل</div><div class="kpi-value" id="k-p1" style="color:var(--p1)">0</div></div>
+      <div class="kpi"><div class="kpi-label">القيمة المتوقعة</div><div class="kpi-value" id="k-val" style="font-size:15px">SR 0</div></div>
+      <div class="kpi"><div class="kpi-label">تم الفوز</div><div class="kpi-value" id="k-won" style="color:var(--won)">0</div></div>
+      <div class="kpi"><div class="kpi-label">معدل التحويل</div><div class="kpi-value" id="k-rate">0%</div></div>
+    </div>
+    <div class="board" id="board">
+      <div class="col" id="col-new" ondragover="dOver(event)" ondragleave="dLeave(event)" ondrop="dDrop(event,'new')">
+        <div class="col-head"><div class="col-title">🆕 جديد</div><span class="col-badge" id="cnt-new">0</span></div>
+        <div class="col-bar" style="background:#93c5fd"></div>
+        <div class="cards" id="cards-new"></div>
+      </div>
+      <div class="col" id="col-visit" ondragover="dOver(event)" ondragleave="dLeave(event)" ondrop="dDrop(event,'visit')">
+        <div class="col-head"><div class="col-title">🚗 زيارة ميدانية</div><span class="col-badge" id="cnt-visit">0</span></div>
+        <div class="col-bar" style="background:#fbbf24"></div>
+        <div class="cards" id="cards-visit"></div>
+      </div>
+      <div class="col" id="col-offer" ondragover="dOver(event)" ondragleave="dLeave(event)" ondrop="dDrop(event,'offer')">
+        <div class="col-head"><div class="col-title">📋 عرض سعر</div><span class="col-badge" id="cnt-offer">0</span></div>
+        <div class="col-bar" style="background:#f97316"></div>
+        <div class="cards" id="cards-offer"></div>
+      </div>
+      <div class="col" id="col-approve" ondragover="dOver(event)" ondragleave="dLeave(event)" ondrop="dDrop(event,'approve')">
+        <div class="col-head"><div class="col-title">✅ موافقة</div><span class="col-badge" id="cnt-approve">0</span></div>
+        <div class="col-bar" style="background:#a855f7"></div>
+        <div class="cards" id="cards-approve"></div>
+      </div>
+      <div class="col" id="col-install" ondragover="dOver(event)" ondragleave="dLeave(event)" ondrop="dDrop(event,'install')">
+        <div class="col-head"><div class="col-title">🔧 تركيب</div><span class="col-badge" id="cnt-install">0</span></div>
+        <div class="col-bar" style="background:#06b6d4"></div>
+        <div class="cards" id="cards-install"></div>
+      </div>
+      <div class="col" id="col-done" ondragover="dOver(event)" ondragleave="dLeave(event)" ondrop="dDrop(event,'done')">
+        <div class="col-head"><div class="col-title">🏆 مكتمل</div><span class="col-badge" id="cnt-done">0</span></div>
+        <div class="col-bar" style="background:#16a34a"></div>
+        <div class="cards" id="cards-done"></div>
+      </div>
+      <div class="col" id="col-lost" ondragover="dOver(event)" ondragleave="dLeave(event)" ondrop="dDrop(event,'lost')">
+        <div class="col-head"><div class="col-title">❌ خسرنا</div><span class="col-badge" id="cnt-lost">0</span></div>
+        <div class="col-bar" style="background:#9ca3af"></div>
+        <div class="cards" id="cards-lost"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORT -->
+  <div class="page" id="page-report">
+    <div class="report-page">
+      <div class="rh">
+        <h2>📊 التقرير اليومي</h2>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="date" class="fs" id="rdate">
+          <select class="fs" id="rrep"><option value="">كل المندوبين</option></select>
+          <button class="btn-add" onclick="exportCSV()">⬇ تصدير CSV</button>
+        </div>
+      </div>
+      <table class="rtable">
+        <thead><tr>
+          <th>العميل</th><th>الهاتف</th><th>المنطقة</th><th>نوع المبنى</th><th>الأدوار</th>
+          <th>الخدمة</th><th>المرحلة</th><th>الأولوية</th><th>إجراء المندوب</th>
+          <th>نتيجة الزيارة</th><th>المندوب</th><th>القيمة (SR)</th>
+        </tr></thead>
+        <tbody id="rbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="page" id="page-stats">
+    <div class="stats-page">
+      <div style="margin-bottom:20px"><h2 style="font-size:20px;font-weight:700;color:var(--primary)">📈 إحصائيات المدير</h2></div>
+      <div class="stats-grid" id="sgrid"></div>
+      <div class="pb-wrap">
+        <div style="font-size:15px;font-weight:700;margin-bottom:14px">توزيع الفرص حسب الأولوية</div>
+        <div id="pbchart"></div>
+      </div>
+      <div class="rg" id="repgrid"></div>
+    </div>
+  </div>
+
+  <!-- CONFIG -->
+  <div class="page" id="page-config">
+    <div class="config-page">
+      <div class="cb">
+        <div style="font-size:16px;font-weight:700;color:var(--primary);margin-bottom:16px">🔗 ربط Google Sheets</div>
+        <div class="fg"><label>رابط Apps Script (Web App URL)</label>
+          <input type="text" id="surl" placeholder="https://script.google.com/macros/s/.../exec">
+        </div>
+        <button class="btn-save" onclick="saveCfg()">حفظ الربط</button>
+        <div id="cstatus" class="cs" style="display:none"></div>
+        <div style="margin-top:20px;padding:16px;background:var(--bg);border-radius:8px">
+          <div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:10px">📋 خطوات الربط:</div>
+          <ol style="font-size:12px;color:var(--text-muted);line-height:2.2;padding-right:16px">
+            <li>افتح ملف Google Sheets المُرفق (AATCO_Sheets.xlsx)</li>
+            <li>من القائمة: <strong>Extensions → Apps Script</strong></li>
+            <li>الصق كود الـ Apps Script المُرفق بالملف</li>
+            <li>انشر كـ Web App: <strong>Deploy → New Deployment → Web App</strong></li>
+            <li>اختر "Anyone" في خانة "Who has access"</li>
+            <li>انسخ الرابط الناتج وألصقه في الخانة أعلاه</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="overlay" id="modal" onclick="if(event.target===this)closeM()">
+  <div class="modal">
+    <div class="mh"><span class="mt" id="mtitle">إضافة فرصة جديدة</span><span class="mc" onclick="closeM()">×</span></div>
+    <div class="mb">
+      <input type="hidden" id="eid">
+      <div class="st" style="margin-top:0">بيانات العميل</div>
+      <div class="fr">
+        <div class="fg"><label>اسم العميل / الشركة *</label><input id="fn" placeholder="مستشفى الملك فهد..."></div>
+        <div class="fg"><label>رقم الهاتف</label><input id="fph" placeholder="05xxxxxxxx"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>المنطقة</label>
+          <select id="freg"><option>جدة</option><option>الرياض</option><option>مكة المكرمة</option><option>المدينة المنورة</option><option>الدمام</option><option>الطائف</option><option>أخرى</option></select>
+        </div>
+        <div class="fg"><label>نوع المبنى</label>
+          <select id="fbt"><option>سكني</option><option>تجاري</option><option>طبي</option><option>حكومي</option><option>فندقي</option></select>
+        </div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>عدد الأدوار</label><input id="ffl" type="number" placeholder="8" min="1"></div>
+        <div class="fg"><label>القيمة المتوقعة (SR)</label><input id="fval" type="number" placeholder="50000"></div>
+      </div>
+
+      <div class="st">نوع الخدمة</div>
+      <div class="fg"><select id="fsvc"><option>تركيب مصعد جديد</option><option>صيانة مصاعد</option><option>تجديد مصعد</option></select></div>
+
+      <div class="st">أولوية الفرصة</div>
+      <div class="po" id="popts">
+        <div class="popt" onclick="selP('p1',this)"><div>🔴 P1</div><div class="pd">يُغلق خلال 3 أيام</div></div>
+        <div class="popt" onclick="selP('p2',this)"><div>🟠 P2</div><div class="pd">7-10 أيام</div></div>
+        <div class="popt" onclick="selP('p3',this)"><div>🟡 P3</div><div class="pd">14 يوم</div></div>
+        <div class="popt" onclick="selP('p4',this)"><div>🔵 P4</div><div class="pd">متابعة مستمرة</div></div>
+      </div>
+      <input type="hidden" id="fpri" value="p2">
+
+      <div class="st" style="margin-top:16px">إجراء المندوب</div>
+      <div class="acs">
+        <span class="chip" onclick="togChip(this)">زيارة ميدانية</span>
+        <span class="chip" onclick="togChip(this)">اتصال هاتفي</span>
+        <span class="chip" onclick="togChip(this)">تقديم عرض سعر</span>
+        <span class="chip" onclick="togChip(this)">مفاوضة</span>
+        <span class="chip" onclick="togChip(this)">إرسال عرض مُعدَّل</span>
+        <span class="chip" onclick="togChip(this)">إغلاق العقد</span>
+      </div>
+
+      <div class="st" style="margin-top:16px">نتيجة الزيارة</div>
+      <div class="rcs">
+        <div class="rch" onclick="selR('pos',this)">✅ إيجابية</div>
+        <div class="rch" onclick="selR('pend',this)">⏳ معلقة</div>
+        <div class="rch" onclick="selR('neg',this)">❌ سلبية</div>
+      </div>
+      <input type="hidden" id="fres">
+      <div class="fg" style="margin-top:12px"><label>ملاحظات</label>
+        <textarea id="fnotes" rows="3" placeholder="تفاصيل الزيارة أو ملاحظات المندوب..."></textarea>
+      </div>
+      <div class="fg"><label>المندوب المسؤول</label>
+        <select id="frep" id="frep"></select>
+      </div>
+      <button class="btn-save" onclick="saveCard()">💾 حفظ الفرصة</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW MODAL -->
+<div class="overlay" id="vmodal" onclick="if(event.target===this)closeV()">
+  <div class="modal">
+    <div class="mh"><span class="mt" id="vtitle">تفاصيل الفرصة</span><span class="mc" onclick="closeV()">×</span></div>
+    <div class="mb" id="vbody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── المستخدمون الافتراضيون — يمكن تحديثهم من Google Sheets ──
+let USERS={
+  'أحمد السعيد': {pass:'1234',  role:'مندوب', region:'جدة',          status:'نشط ✅'},
+  'محمد العمري': {pass:'1234',  role:'مندوب', region:'الرياض',        status:'نشط ✅'},
+  'خالد الزهراني':{pass:'1234', role:'مندوب', region:'مكة المكرمة',   status:'نشط ✅'},
+  'سارة المالكي': {pass:'1234', role:'مندوب', region:'جدة',          status:'نشط ✅'},
+  'مدير النظام':  {pass:'admin',role:'مدير',  region:'الكل',          status:'نشط ✅'},
+};
+let usersLoaded=false;
+const COLS={new:'جديد',visit:'زيارة ميدانية',offer:'عرض سعر',approve:'موافقة',install:'تركيب',done:'مكتمل',lost:'خسرنا'};
+const PL={p1:'P1 — 3 أيام',p2:'P2 — 10 أيام',p3:'P3 — 14 يوم',p4:'P4 — متابعة'};
+let cards=JSON.parse(localStorage.getItem('aatco_cards')||'[]');
+let curUser='',curRole='',dragCard=null,placeholder=null,selPri='p2',selRes='',selAct='',idCtr=parseInt(localStorage.getItem('aatco_id')||'0');
+let sheetsUrl=localStorage.getItem('aatco_sheets')||'';
+
+// ── تحميل المستخدمين من Google Sheets ──
+async function loadUsersFromSheets(showMsg){
+  if(!sheetsUrl){ if(showMsg) showLoginMsg('لم يتم ربط Google Sheets بعد','#ca9e00'); return; }
+  showLoginMsg('جاري تحميل المستخدمين...','#2563c7');
+  try{
+    const res=await fetch(sheetsUrl+'?action=getUsers&t='+Date.now());
+    const data=await res.json();
+    if(data.users&&data.users.length>0){
+      const newUsers={};
+      data.users.forEach(u=>{
+        if(u.name&&u.password){
+          newUsers[u.name]={pass:String(u.password),role:u.role||'مندوب',region:u.region||'الكل',status:u.status||'نشط ✅'};
+        }
+      });
+      if(Object.keys(newUsers).length>0){
+        USERS=newUsers; usersLoaded=true;
+        refreshLoginDropdown();
+        showLoginMsg('✅ تم تحميل '+Object.keys(newUsers).length+' مستخدم من Sheets','#16a34a');
+      }
+    }else{
+      if(showMsg) showLoginMsg('⚠️ لم يتم العثور على مستخدمين في Sheets','#dc2626');
+    }
+  }catch(e){
+    if(showMsg) showLoginMsg('❌ تعذّر الاتصال بـ Google Sheets','#dc2626');
+    console.log('Sheets error:',e);
+  }
+}
+function showLoginMsg(msg,color){
+  const e=document.getElementById('lerr');
+  e.style.display='block';e.style.color=color||'#dc2626';e.textContent=msg;
+}
+function refreshLoginDropdown(){
+  const sel=document.getElementById('lu');
+  sel.innerHTML='<option value="">— اختر اسمك —</option>';
+  Object.keys(USERS).forEach(n=>{
+    const u=USERS[n];
+    if(u.status==='نشط ✅'){
+      const o=document.createElement('option');o.value=n;
+      o.textContent=n+' | '+u.role;sel.appendChild(o);
+    }
+  });
+}
+// تحميل تلقائي عند فتح الصفحة
+window.addEventListener('load',()=>{ if(sheetsUrl) loadUsersFromSheets(false); });
+
+// LOGIN
+function doLogin(){
+  const u=document.getElementById('lu').value,p=document.getElementById('lp').value;
+  if(!u){showErr('اختر اسمك أولاً');return;}
+  const usr=USERS[u];
+  if(!usr){showErr('المستخدم غير موجود');return;}
+  if(usr.status&&usr.status!=='نشط ✅'){showErr('هذا الحساب موقوف — تواصل مع المدير');return;}
+  if(usr.pass!==p){showErr('كلمة المرور غير صحيحة');return;}
+  curUser=u; curRole=usr.role||'مندوب';
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('uname').textContent=u+' | '+curRole;
+  document.getElementById('uav').textContent=u[0];
+  // Role-based access
+  if(curRole==='مدير'||curRole==='مشرف'){
+    document.getElementById('stats-btn').style.display='inline-block';
+  }
+  populateReps();
+  if(curRole==='مندوب'){document.getElementById('rep-filter').value=u;filterRep(u);}
+  if(sheetsUrl) document.getElementById('surl').value=sheetsUrl;
+  renderAll();
+}
+function showErr(m){const e=document.getElementById('lerr');e.style.display='block';e.textContent=m;}
+function doLogout(){curUser='';curRole='';document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('lp').value='';document.getElementById('lerr').style.display='none';}
+
+// NAV
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='report')renderReport();
+  if(id==='stats')renderStats();
+}
+
+// RENDER
+function renderAll(){
+  Object.keys(COLS).forEach(c=>document.getElementById('cards-'+c).innerHTML='');
+  cards.forEach(c=>{
+    // مندوب يرى فرصه فقط
+    if(curRole==='مندوب' && c.rep!==curUser) return;
+    appendCard(c);
+  });
+  updateKPIs();updateCounts();
+}
+function appendCard(c){
+  const el=document.createElement('div');
+  const sc=c.service==='تركيب مصعد جديد'?'sn':c.service==='صيانة مصاعد'?'sm':'sr';
+  const rc=c.result==='pos'?'pos':c.result==='pend'?'pend':c.result==='neg'?'neg':'';
+  el.className=`card ${c.priority}`;el.draggable=true;el.dataset.id=c.id;
+  el.innerHTML=`
+    <div class="card-top">
+      <div><div class="card-name">${c.name}</div><span class="csvc ${sc}">${c.service}</span></div>
+      <span class="pb pb-${c.priority}">${c.priority.toUpperCase()}</span>
+    </div>
+    <div class="ci">📍 ${c.region} &nbsp;|&nbsp; 🏢 ${c.btype} &nbsp;|&nbsp; ${c.floors} أدوار</div>
+    <div class="ci">📞 ${c.phone}</div>
+    ${c.action?`<div class="ci">⚡ ${c.action}</div>`:''}
+    ${c.notes?`<div class="cr ${rc}">${c.notes}</div>`:''}
+    <div class="cf"><span>👤 ${c.rep}</span><span>${c.value?'SR '+Number(c.value).toLocaleString():''}</span></div>
+  `;
+  el.ondragstart=dStart;el.ondragend=dEnd;
+  el.onclick=(e)=>{if(!dragCard)openView(c.id);};
+  document.getElementById('cards-'+c.col).appendChild(el);
+}
+function updateCounts(){Object.keys(COLS).forEach(c=>document.getElementById('cnt-'+c).textContent=cards.filter(x=>x.col===c).length);}
+function updateKPIs(){
+  const active=cards.filter(c=>c.col!=='lost');
+  const won=cards.filter(c=>c.col==='done').length;
+  const lost=cards.filter(c=>c.col==='lost').length;
+  const tv=active.reduce((s,c)=>s+(parseFloat(c.value)||0),0);
+  document.getElementById('k-total').textContent=active.length;
+  document.getElementById('k-p1').textContent=active.filter(c=>c.priority==='p1').length;
+  document.getElementById('k-val').textContent='SR '+tv.toLocaleString();
+  document.getElementById('k-won').textContent=won;
+  const total=won+lost;
+  document.getElementById('k-rate').textContent=total?Math.round((won/total)*100)+'%':'0%';
+}
+function save(){localStorage.setItem('aatco_cards',JSON.stringify(cards));localStorage.setItem('aatco_id',idCtr);}
+
+// DRAG
+function dStart(e){dragCard=e.currentTarget;setTimeout(()=>dragCard.classList.add('dragging'),0);e.dataTransfer.effectAllowed='move';}
+function dEnd(e){
+  dragCard.classList.remove('dragging');
+  if(placeholder&&placeholder.parentNode)placeholder.parentNode.removeChild(placeholder);
+  placeholder=null;
+  document.querySelectorAll('.col').forEach(c=>c.classList.remove('drag-over'));
+  dragCard=null;updateCounts();updateKPIs();
+}
+function dOver(e){
+  e.preventDefault();const col=e.currentTarget;col.classList.add('drag-over');
+  const ce=col.querySelector('.cards');
+  if(!placeholder){placeholder=document.createElement('div');placeholder.className='drop-ph';}
+  const af=getAfter(ce,e.clientY);
+  if(af==null)ce.appendChild(placeholder);else ce.insertBefore(placeholder,af);
+}
+function dLeave(e){
+  if(!e.currentTarget.contains(e.relatedTarget)){
+    e.currentTarget.classList.remove('drag-over');
+    if(placeholder&&placeholder.parentNode===e.currentTarget.querySelector('.cards'))placeholder.parentNode.removeChild(placeholder);
+  }
+}
+function dDrop(e,col){
+  e.preventDefault();
+  const c=e.currentTarget;c.classList.remove('drag-over');
+  const ce=c.querySelector('.cards');
+  const card=cards.find(x=>x.id==dragCard.dataset.id);
+  const old=card.col;
+  if(placeholder&&placeholder.parentNode===ce){ce.insertBefore(dragCard,placeholder);ce.removeChild(placeholder);placeholder=null;}
+  else ce.appendChild(dragCard);
+  card.col=col;save();
+  if(old!==col)toast(`تم نقل "${card.name}" إلى ${COLS[col]}`);
+  updateCounts();updateKPIs();
+  if(sheetsUrl)sync(card,'update');
+}
+function getAfter(container,y){
+  const els=[...container.querySelectorAll('.card:not(.dragging)')];
+  return els.reduce((c,el)=>{
+    const b=el.getBoundingClientRect(),off=y-b.top-b.height/2;
+    if(off<0&&off>c.offset)return{offset:off,el};return c;
+  },{offset:Number.NEGATIVE_INFINITY}).el||null;
+}
+
+// MODAL
+function openNew(){
+  document.getElementById('eid').value='';
+  document.getElementById('mtitle').textContent='إضافة فرصة جديدة';
+  ['fn','fph','ffl','fval','fnotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('freg').value='جدة';document.getElementById('fbt').value='سكني';
+  document.getElementById('fsvc').value='تركيب مصعد جديد';
+  // populate rep dropdown based on role
+  populateRepModal();
+  document.getElementById('frep').value=curRole==='مندوب'?curUser:(Object.keys(USERS)[0]||'');
+  selAct='';selRes='';
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  document.querySelectorAll('.rch').forEach(c=>c.classList.remove('pos','pend','neg'));
+  initP('p2');document.getElementById('modal').classList.add('show');
+}
+function closeM(){document.getElementById('modal').classList.remove('show');}
+function selP(p,el){
+  selPri=p;document.getElementById('fpri').value=p;
+  document.querySelectorAll('.popt').forEach(o=>o.className='popt');
+  el.classList.add('sel-'+p);
+}
+function initP(p){
+  selPri=p;document.getElementById('fpri').value=p;
+  const ps=['p1','p2','p3','p4'];
+  document.querySelectorAll('.popt').forEach((o,i)=>{o.className='popt';if(ps[i]===p)o.classList.add('sel-'+p);});
+}
+function togChip(el){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');selAct=el.textContent;
+}
+function selR(r,el){
+  selRes=r;document.getElementById('fres').value=r;
+  document.querySelectorAll('.rch').forEach(c=>c.classList.remove('pos','pend','neg'));
+  el.classList.add(r);
+}
+function saveCard(){
+  const name=document.getElementById('fn').value.trim();
+  if(!name){toast('يرجى إدخال اسم العميل');return;}
+  const eid=document.getElementById('eid').value;
+  const d={
+    id:eid||++idCtr,name,
+    phone:document.getElementById('fph').value||'—',
+    region:document.getElementById('freg').value,
+    btype:document.getElementById('fbt').value,
+    floors:document.getElementById('ffl').value||'—',
+    value:document.getElementById('fval').value||'0',
+    service:document.getElementById('fsvc').value,
+    priority:document.getElementById('fpri').value||'p2',
+    action:selAct,result:selRes,
+    notes:document.getElementById('fnotes').value.trim(),
+    rep:document.getElementById('frep').value,
+    col:eid?(cards.find(c=>c.id==eid)||{col:'new'}).col:'new',
+    date:new Date().toLocaleDateString('ar-SA')
+  };
+  if(eid){const i=cards.findIndex(c=>c.id==eid);cards[i]=d;}
+  else cards.push(d);
+  save();renderAll();closeM();
+  toast(eid?`تم تعديل "${name}"`:`تمت إضافة "${name}" بنجاح`);
+  if(sheetsUrl)sync(d,eid?'update':'add');
+}
+
+// VIEW
+function openView(id){
+  const c=cards.find(x=>x.id==id);if(!c)return;
+  document.getElementById('vtitle').textContent=c.name;
+  const rl=c.result==='pos'?'✅ إيجابية':c.result==='pend'?'⏳ معلقة':c.result==='neg'?'❌ سلبية':'—';
+  document.getElementById('vbody').innerHTML=`
+    <div class="st" style="margin-top:0">بيانات العميل</div>
+    <table style="width:100%;font-size:13px;border-collapse:collapse">
+      ${vr('الاسم',c.name)}${vr('الهاتف',c.phone)}${vr('المنطقة',c.region)}
+      ${vr('نوع المبنى',c.btype)}${vr('عدد الأدوار',c.floors)}${vr('الخدمة',c.service)}
+      ${vr('القيمة',c.value&&c.value!='0'?'SR '+Number(c.value).toLocaleString():'—')}
+      ${vr('الأولوية',`<span class="pb pb-${c.priority}">${PL[c.priority]}</span>`)}
+      ${vr('المرحلة',COLS[c.col])}${vr('المندوب',c.rep)}
+      ${vr('إجراء المندوب',c.action||'—')}${vr('نتيجة الزيارة',rl)}
+    </table>
+    ${c.notes?`<div style="margin-top:12px;padding:10px;background:var(--bg);border-radius:8px;font-size:13px;color:var(--text-muted)">${c.notes}</div>`:''}
+    <div class="st" style="margin-top:16px">نقل إلى مرحلة</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${Object.entries(COLS).filter(([k])=>k!==c.col).map(([k,v])=>`<button class="mv-btn" onclick="moveCard(${c.id},'${k}');closeV()">${v}</button>`).join('')}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn-save" style="flex:1" onclick="editCard(${c.id})">✏️ تعديل</button>
+      <button class="btn-save" style="flex:1;background:#dc2626" onclick="delCard(${c.id})">🗑️ حذف</button>
+    </div>
+  `;
+  document.getElementById('vmodal').classList.add('show');
+}
+function vr(l,v){return`<tr><td style="padding:7px 0;color:var(--text-muted);border-bottom:1px solid var(--border);width:40%">${l}</td><td style="padding:7px 0;font-weight:600;border-bottom:1px solid var(--border)">${v}</td></tr>`;}
+function closeV(){document.getElementById('vmodal').classList.remove('show');}
+function editCard(id){
+  closeV();const c=cards.find(x=>x.id==id);
+  document.getElementById('eid').value=id;
+  document.getElementById('mtitle').textContent='تعديل الفرصة';
+  document.getElementById('fn').value=c.name;document.getElementById('fph').value=c.phone;
+  document.getElementById('freg').value=c.region;document.getElementById('fbt').value=c.btype;
+  document.getElementById('ffl').value=c.floors;document.getElementById('fval').value=c.value;
+  document.getElementById('fsvc').value=c.service;document.getElementById('fnotes').value=c.notes||'';
+  document.getElementById('frep').value=c.rep;
+  initP(c.priority);selAct=c.action||'';selRes=c.result||'';
+  document.querySelectorAll('.chip').forEach(ch=>ch.classList.toggle('sel',ch.textContent.trim()===c.action));
+  document.querySelectorAll('.rch').forEach(ch=>{
+    ch.classList.remove('pos','pend','neg');
+    if((ch.textContent.includes('إيجابية')&&c.result==='pos')||(ch.textContent.includes('معلقة')&&c.result==='pend')||(ch.textContent.includes('سلبية')&&c.result==='neg'))
+      ch.classList.add(c.result);
+  });
+  document.getElementById('modal').classList.add('show');
+}
+function delCard(id){
+  if(!confirm('هل أنت متأكد؟'))return;
+  cards=cards.filter(c=>c.id!=id);save();renderAll();closeV();toast('تم حذف الفرصة');
+}
+function moveCard(id,col){
+  const c=cards.find(x=>x.id==id);c.col=col;save();renderAll();
+  toast(`تم نقل "${c.name}" إلى ${COLS[col]}`);
+  if(sheetsUrl)sync(c,'update');
+}
+
+// FILTERS
+function filterName(q){document.querySelectorAll('.card').forEach(el=>el.style.display=el.querySelector('.card-name').textContent.includes(q)?'':'none');}
+function filterP(p){document.querySelectorAll('.card').forEach(el=>el.style.display=(!p||el.classList.contains(p))?'':'none');}
+function filterSvc(s){document.querySelectorAll('.card').forEach(el=>{const c=cards.find(x=>x.id==el.dataset.id);el.style.display=(!s||c.service===s)?'':'none';});}
+function filterRep(r){document.querySelectorAll('.card').forEach(el=>{const c=cards.find(x=>x.id==el.dataset.id);el.style.display=(!r||c.rep===r)?'':'none';});}
+function populateReps(){
+  const reps=Object.keys(USERS).filter(n=>USERS[n].role==='مندوب'||USERS[n].role==='مشرف');
+  ['rep-filter','rrep'].forEach(id=>{
+    const s=document.getElementById(id);if(!s)return;
+    // keep first option
+    while(s.options.length>1) s.remove(1);
+    reps.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;s.appendChild(o);});
+  });
+  // if مندوب lock the filter
+  if(curRole==='مندوب'){
+    const rf=document.getElementById('rep-filter');
+    rf.value=curUser; rf.disabled=true; filterRep(curUser);
+  }
+}
+function populateRepModal(){
+  const sel=document.getElementById('frep');
+  sel.innerHTML='';
+  if(curRole==='مندوب'){
+    // مندوب: يرى اسمه فقط
+    const o=document.createElement('option');o.value=curUser;o.textContent=curUser;sel.appendChild(o);
+    sel.disabled=true;
+  } else {
+    // مدير/مشرف: يرى الكل
+    sel.disabled=false;
+    Object.keys(USERS).filter(n=>USERS[n].role!=='مدير').forEach(n=>{
+      const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);
+    });
+  }
+}
+
+// REPORT
+function renderReport(){
+  const b=document.getElementById('rbody');b.innerHTML='';
+  cards.forEach(c=>{
+    const rl=c.result==='pos'?'✅ إيجابية':c.result==='pend'?'⏳ معلقة':c.result==='neg'?'❌ سلبية':'—';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${c.name}</strong></td><td>${c.phone}</td><td>${c.region}</td><td>${c.btype}</td><td>${c.floors}</td><td>${c.service}</td><td>${COLS[c.col]}</td><td><span class="pb pb-${c.priority}">${c.priority.toUpperCase()}</span></td><td>${c.action||'—'}</td><td>${rl}${c.notes?`<br><small style="color:var(--text-muted)">${c.notes}</small>`:''}</td><td>${c.rep}</td><td>${c.value&&c.value!='0'?Number(c.value).toLocaleString():'—'}</td>`;
+    b.appendChild(tr);
+  });
+}
+
+// STATS
+function renderStats(){
+  const active=cards.filter(c=>c.col!=='lost');
+  const won=cards.filter(c=>c.col==='done');
+  const tv=active.reduce((s,c)=>s+(parseFloat(c.value)||0),0);
+  document.getElementById('sgrid').innerHTML=`
+    <div class="sc"><div class="sc-label">إجمالي الفرص</div><div class="sc-val">${active.length}</div></div>
+    <div class="sc"><div class="sc-label">القيمة الإجمالية</div><div class="sc-val" style="font-size:18px">SR ${tv.toLocaleString()}</div></div>
+    <div class="sc"><div class="sc-label">تم الفوز</div><div class="sc-val" style="color:var(--won)">${won.length}</div></div>
+    <div class="sc"><div class="sc-label">🔴 P1 عاجلة</div><div class="sc-val" style="color:var(--p1)">${active.filter(c=>c.priority==='p1').length}</div></div>
+  `;
+  const colors={p1:'var(--p1)',p2:'var(--p2)',p3:'var(--p3)',p4:'var(--p4)'};
+  document.getElementById('pbchart').innerHTML=['p1','p2','p3','p4'].map(p=>{
+    const n=active.filter(c=>c.priority===p).length;
+    const pct=active.length?Math.round((n/active.length)*100):0;
+    return`<div class="pb-row"><div class="pb-lbl" style="color:${colors[p]}">${p.toUpperCase()} <small style="font-weight:400">${PL[p].split('—')[1]}</small></div><div class="pb-bw"><div class="pb-b" style="width:${pct}%;background:${colors[p]}"></div></div><div class="pb-n" style="color:${colors[p]}">${n}</div></div>`;
+  }).join('');
+  const reps=['أحمد السعيد','محمد العمري','خالد الزهراني','سارة المالكي'];
+  document.getElementById('repgrid').innerHTML=reps.map(r=>{
+    const rc=cards.filter(c=>c.rep===r);
+    const rw=rc.filter(c=>c.col==='done');
+    const rv=rc.reduce((s,c)=>s+(parseFloat(c.value)||0),0);
+    return`<div class="rc"><div class="rn"><div class="rav">${r[0]}</div>${r}</div><div class="rs"><div class="rsv"><div class="rsv-n">${rc.length}</div><div class="rsv-l">فرصة</div></div><div class="rsv"><div class="rsv-n" style="color:var(--won)">${rw.length}</div><div class="rsv-l">مُغلقة</div></div><div class="rsv" style="grid-column:span 2"><div class="rsv-n" style="font-size:13px">SR ${rv.toLocaleString()}</div><div class="rsv-l">القيمة الكلية</div></div></div></div>`;
+  }).join('');
+}
+
+// GOOGLE SHEETS
+function saveCfg(){
+  sheetsUrl=document.getElementById('surl').value.trim();
+  localStorage.setItem('aatco_sheets',sheetsUrl);
+  const s=document.getElementById('cstatus');s.style.display='block';s.className='cs ok';
+  s.textContent='✅ تم حفظ الرابط. سيتم مزامنة البيانات تلقائياً عند أي تغيير.';
+  toast('تم حفظ إعدادات Google Sheets');
+}
+async function sync(card,action){
+  if(!sheetsUrl)return;
+  try{await fetch(sheetsUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,card})});}
+  catch(e){console.log('sync:',e);}
+}
+
+// EXPORT
+function exportCSV(){
+  const rows=[['العميل','الهاتف','المنطقة','نوع المبنى','الأدوار','الخدمة','المرحلة','الأولوية','إجراء المندوب','نتيجة الزيارة','الملاحظات','المندوب','القيمة']];
+  cards.forEach(c=>rows.push([c.name,c.phone,c.region,c.btype,c.floors,c.service,COLS[c.col],c.priority.toUpperCase(),c.action||'',c.result||'',c.notes||'',c.rep,c.value||'']));
+  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`AATCO_Report_${new Date().toLocaleDateString('ar-SA').replace(/\//g,'-')}.csv`;a.click();
+}
+
+// TOAST
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// SET DATE
+document.getElementById('rdate').value=new Date().toISOString().split('T')[0];
+
+// SAMPLE DATA
+if(cards.length===0){
+  cards=[
+    {id:1,name:'مستشفى الحرس الوطني',phone:'0551234567',region:'جدة',btype:'طبي',floors:'12',value:'120000',service:'تركيب مصعد جديد',priority:'p1',action:'زيارة ميدانية',result:'pos',notes:'اهتمام كبير بالمصاعد الطبية، يطلب عرض سعر مفصل',rep:'أحمد السعيد',col:'visit',date:'اليوم'},
+    {id:2,name:'برج المملكة',phone:'0557654321',region:'الرياض',btype:'تجاري',floors:'30',value:'280000',service:'تجديد مصعد',priority:'p2',action:'تقديم عرض سعر',result:'pend',notes:'بانتظار موافقة مجلس الإدارة',rep:'محمد العمري',col:'offer',date:'أمس'},
+    {id:3,name:'ساني للمقاولات',phone:'0562345678',region:'مكة المكرمة',btype:'سكني',floors:'8',value:'65000',service:'تركيب مصعد جديد',priority:'p3',action:'مفاوضة',result:'pend',notes:'يطلب تخفيض 5%',rep:'خالد الزهراني',col:'approve',date:'منذ 3 أيام'},
+    {id:4,name:'أرامكو السعودية',phone:'0134567890',region:'الدمام',btype:'حكومي',floors:'6',value:'90000',service:'صيانة مصاعد',priority:'p1',action:'إغلاق العقد',result:'pos',notes:'عقد موقع - تم استلام الدفعة الأولى',rep:'سارة المالكي',col:'done',date:'هذا الأسبوع'},
+    {id:5,name:'شركة الخليج للتطوير',phone:'0509876543',region:'جدة',btype:'تجاري',floors:'15',value:'150000',service:'تركيب مصعد جديد',priority:'p4',action:'اتصال هاتفي',result:'pend',notes:'مشروع مستقبلي - متابعة كل أسبوع',rep:'أحمد السعيد',col:'new',date:'منذ أسبوع'},
+    {id:6,name:'فندق هيلتون جدة',phone:'0125559900',region:'جدة',btype:'فندقي',floors:'20',value:'200000',service:'تجديد مصعد',priority:'p2',action:'إرسال عرض مُعدَّل',result:'pos',notes:'موافقة مبدئية من المدير الفني',rep:'محمد العمري',col:'approve',date:'منذ يومين'},
+  ];
+  idCtr=6;save();
+}
+</script>
+</body>
+</html>
