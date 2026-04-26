@@ -1074,7 +1074,36 @@ function renderStats(){
     const rc=cards.filter(c=>c.rep===r);
     const rw=rc.filter(c=>c.col==='done');
     const rv=rc.reduce((s,c)=>s+(parseFloat(c.value)||0),0);
-    return`<div class="rc"><div class="rn"><div class="rav">${r[0]}</div>${r}</div><div class="rs"><div class="rsv"><div class="rsv-n">${rc.length}</div><div class="rsv-l">فرصة</div></div><div class="rsv"><div class="rsv-n" style="color:var(--won)">${rw.length}</div><div class="rsv-l">مُغلقة</div></div><div class="rsv" style="grid-column:span 2"><div class="rsv-n" style="font-size:13px">SR ${rv.toLocaleString()}</div><div class="rsv-l">القيمة</div></div></div></div>`;
+    // Count elevators per service type
+    const elevNew   = rc.filter(c=>c.service==='تركيب مصعد جديد').reduce((s,c)=>s+(parseInt(c.elevators)||1),0);
+    const elevMaint = rc.filter(c=>c.service==='صيانة مصاعد').reduce((s,c)=>s+(parseInt(c.elevators)||1),0);
+    const elevRenew = rc.filter(c=>c.service==='تجديد مصعد').reduce((s,c)=>s+(parseInt(c.elevators)||1),0);
+    return`
+    <div class="rc">
+      <div class="rn"><div class="rav">${r[0]}</div>${r}</div>
+      <div class="rs">
+        <div class="rsv"><div class="rsv-n">${rc.length}</div><div class="rsv-l">فرصة</div></div>
+        <div class="rsv"><div class="rsv-n" style="color:var(--won)">${rw.length}</div><div class="rsv-l">مُغلقة</div></div>
+        <div class="rsv" style="grid-column:span 2"><div class="rsv-n" style="font-size:13px">SR ${rv.toLocaleString()}</div><div class="rsv-l">القيمة</div></div>
+      </div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px">🛗 المصاعد حسب نوع الخدمة</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <div style="flex:1;background:#eff6ff;border-radius:6px;padding:6px 8px;text-align:center">
+            <div style="font-size:16px;font-weight:700;color:#1d4ed8">${elevNew}</div>
+            <div style="font-size:10px;color:var(--text-muted)">تركيب جديد</div>
+          </div>
+          <div style="flex:1;background:#f0fdf4;border-radius:6px;padding:6px 8px;text-align:center">
+            <div style="font-size:16px;font-weight:700;color:var(--won)">${elevMaint}</div>
+            <div style="font-size:10px;color:var(--text-muted)">صيانة</div>
+          </div>
+          <div style="flex:1;background:#fdf4ff;border-radius:6px;padding:6px 8px;text-align:center">
+            <div style="font-size:16px;font-weight:700;color:#7e22ce">${elevRenew}</div>
+            <div style="font-size:10px;color:var(--text-muted)">تجديد</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
   }).join('');
 }
 
