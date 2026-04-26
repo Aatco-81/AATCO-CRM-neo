@@ -189,6 +189,101 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
 .cs.ok{background:#f0fdf4;color:var(--won);border:1px solid #86efac}
 .cs.err{background:var(--p1-bg);color:var(--p1);border:1px solid var(--p1-border)}
 
+/* SCHEDULE PAGE */
+.sch-page{padding:24px;max-width:1000px;margin:0 auto}
+.sch-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.sch-title{font-size:20px;font-weight:700;color:var(--primary)}
+.cal-wrap{background:white;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden}
+.cal-head{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--primary-light)}
+.cal-month{font-size:16px;font-weight:700;color:var(--primary)}
+.cal-nav-btn{background:white;border:1px solid var(--border);border-radius:6px;padding:5px 14px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:500}
+.cal-nav-btn:hover{background:var(--primary);color:white;border-color:var(--primary)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border)}
+.cal-day-lbl{background:var(--primary);color:white;text-align:center;font-size:11px;font-weight:700;padding:8px 4px}
+.cal-cell{background:white;min-height:80px;padding:6px;cursor:pointer;transition:background .15s}
+.cal-cell:hover{background:var(--primary-light)}
+.cal-cell.today{background:#eff6ff}
+.cal-cell.other-month{opacity:.4}
+.cal-cell.has-appt{border-top:2px solid var(--p2)}
+.cal-date{font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:3px}
+.cal-cell.today .cal-date{color:var(--primary)}
+.appt-dot{font-size:10px;padding:1px 5px;border-radius:3px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.appt-dot.p1{background:var(--p1-bg);color:var(--p1)}
+.appt-dot.p2{background:var(--p2-bg);color:var(--p2)}
+.appt-dot.p3{background:var(--p3-bg);color:var(--p3)}
+.appt-dot.p4{background:var(--p4-bg);color:var(--p4)}
+.appt-list{display:flex;flex-direction:column;gap:10px}
+.appt-card{background:white;border-radius:var(--radius);border:1.5px solid var(--border);padding:14px 16px;display:flex;align-items:flex-start;gap:14px;box-shadow:var(--shadow)}
+.appt-date-box{min-width:52px;text-align:center;background:var(--primary-light);border-radius:8px;padding:8px 6px;flex-shrink:0}
+.appt-day{font-size:22px;font-weight:700;color:var(--primary);line-height:1}
+.appt-month-lbl{font-size:10px;color:var(--text-muted);margin-top:2px}
+.appt-info{flex:1}
+.appt-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.appt-meta{font-size:12px;color:var(--text-muted);display:flex;gap:10px;flex-wrap:wrap}
+.appt-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.btn-xs{padding:4px 10px;border-radius:6px;font-size:11px;font-family:'Tajawal',sans-serif;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--text);transition:all .15s}
+.btn-xs:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+.btn-xs.danger{border-color:#fca5a5;color:var(--p1)}
+.btn-xs.danger:hover{background:var(--p1-bg)}
+.today-badge{background:var(--primary-light);color:var(--primary);font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:4px}
+.overdue-badge{background:var(--p1-bg);color:var(--p1);font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:4px}
+.done-badge{background:var(--won-bg);color:var(--won);font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:4px}
+.empty-state{text-align:center;padding:40px;color:var(--text-muted);font-size:14px}
+.sec-title{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--primary-light)}
+
+/* ACTIVITY PAGE */
+.act-page{padding:24px;max-width:900px;margin:0 auto}
+.tl-wrap{position:relative;padding-right:24px}
+.tl-wrap::before{content:'';position:absolute;right:10px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl-group{margin-bottom:24px}
+.tl-date-lbl{font-size:12px;font-weight:700;color:var(--primary);background:var(--primary-light);padding:4px 12px;border-radius:6px;display:inline-block;margin-bottom:10px;margin-right:-24px}
+.tl-item{background:white;border-radius:var(--radius);border:1px solid var(--border);padding:12px 14px;margin-bottom:8px;margin-right:14px;position:relative;box-shadow:var(--shadow)}
+.tl-item::before{content:'';position:absolute;right:-20px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--primary);border:2px solid white;box-shadow:0 0 0 2px var(--primary)}
+.tl-item.act-add::before{background:var(--won)}
+.tl-item.act-edit::before{background:var(--p3)}
+.tl-item.act-move::before{background:var(--p2)}
+.tl-item.act-del::before{background:var(--p1)}
+.tl-item.act-appt::before{background:var(--p4)}
+.tl-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.tl-action{font-size:13px;font-weight:700;color:var(--text)}
+.tl-client{font-size:12px;color:var(--primary);margin-top:2px}
+.tl-time{font-size:11px;color:var(--text-muted);white-space:nowrap;flex-shrink:0}
+.tl-notes{font-size:12px;color:var(--text-muted);margin-top:5px;padding:4px 8px;background:var(--bg);border-radius:5px}
+.act-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:6px}
+.ab-add{background:var(--won-bg);color:var(--won)}
+.ab-edit{background:var(--p3-bg);color:var(--p3)}
+.ab-move{background:var(--p2-bg);color:var(--p2)}
+.ab-del{background:var(--p1-bg);color:var(--p1)}
+.ab-appt{background:var(--p4-bg);color:var(--p4)}
+.ab-def{background:var(--primary-light);color:var(--primary)}
+.act-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+
+/* TARGETS PAGE */
+.tgt-page{padding:24px;max-width:1000px;margin:0 auto}
+.tgt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.tgt-card{background:white;border-radius:var(--radius);border:1.5px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+.tgt-head{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.tgt-av{width:40px;height:40px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+.tgt-name{font-size:14px;font-weight:700}
+.tgt-role{font-size:11px;color:var(--text-muted)}
+.tgt-body{padding:14px 16px}
+.tgt-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.tgt-lbl{font-size:12px;color:var(--text-muted);font-weight:500}
+.tgt-vals{display:flex;align-items:center;gap:6px;font-size:13px}
+.tgt-actual{font-weight:700;font-size:16px}
+.prg-wrap{background:var(--bg);border-radius:4px;height:8px;overflow:hidden;margin-bottom:12px}
+.prg-bar{height:100%;border-radius:4px;transition:width .6s ease}
+.pct-badge{font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px}
+.pct-great{background:var(--won-bg);color:var(--won)}
+.pct-ok{background:var(--p4-bg);color:var(--p4)}
+.pct-warn{background:var(--p2-bg);color:var(--p2)}
+.pct-low{background:var(--p1-bg);color:var(--p1)}
+.tgt-footer{border-top:1px solid var(--border);padding:10px 16px;background:var(--bg);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tgt-footer label{font-size:11px;color:var(--text-muted);font-weight:500}
+.tgt-input{border:1.5px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;font-family:'Tajawal',sans-serif;width:80px;outline:none}
+.tgt-input:focus{border-color:var(--accent)}
+.btn-save-tgt{padding:5px 14px;border-radius:6px;font-size:12px;font-family:'Tajawal',sans-serif;cursor:pointer;background:var(--primary);color:white;border:none;font-weight:500}
+
 /* SYNC STATUS */
 .sync-status{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);padding:10px 24px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.2);white-space:nowrap}
 .sync-status.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -232,6 +327,9 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
     <div class="tb-brand">🏢 <span>AATCO</span> إدارة العملاء</div>
     <div class="tb-nav">
       <button class="nb active" onclick="showPage('kanban',this)">🏠 المبيعات</button>
+      <button class="nb" onclick="showPage('schedule',this)">📅 المواعيد</button>
+      <button class="nb" onclick="showPage('activity',this)">📋 النشاط</button>
+      <button class="nb" onclick="showPage('targets',this)">🎯 الأهداف</button>
       <button class="nb" onclick="showPage('report',this)">📊 التقرير</button>
       <button class="nb" id="stats-btn" onclick="showPage('stats',this)" style="display:none">📈 إحصائيات</button>
       <button class="nb" onclick="showPage('config',this)">⚙️ الإعدادات</button>
@@ -362,6 +460,80 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
       </div>
     </div>
   </div>
+
+  <!-- SCHEDULE PAGE -->
+  <div class="page" id="page-schedule">
+    <div class="sch-page">
+      <div class="sch-header">
+        <div class="sch-title">📅 جدول المواعيد</div>
+        <button class="btn-add" onclick="openApptModal()">+ إضافة موعد</button>
+      </div>
+      <div class="cal-wrap">
+        <div class="cal-head">
+          <button class="cal-nav-btn" onclick="prevMonth()">→ السابق</button>
+          <span class="cal-month" id="cal-month-lbl"></span>
+          <button class="cal-nav-btn" onclick="nextMonth()">التالي ←</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+      <div class="sec-title">📋 قائمة المواعيد</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <select class="fs" id="appt-filter-rep" onchange="renderAppts()"><option value="">كل المندوبين</option></select>
+        <select class="fs" id="appt-filter-status" onchange="renderAppts()">
+          <option value="">الكل</option>
+          <option value="upcoming">القادمة</option>
+          <option value="today">اليوم</option>
+          <option value="overdue">المتأخرة</option>
+          <option value="done">المنتهية</option>
+        </select>
+      </div>
+      <div class="appt-list" id="appt-list"></div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY PAGE -->
+  <div class="page" id="page-activity">
+    <div class="act-page">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <div class="sch-title">📋 سجل النشاط</div>
+        <button class="btn-add" onclick="exportActivity()">⬇ تصدير CSV</button>
+      </div>
+      <div class="act-stats" id="act-stats"></div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+        <input class="si" style="width:180px" placeholder="🔍 بحث..." oninput="renderActivity(this.value)">
+        <select class="fs" id="act-filter-rep" onchange="renderActivity()"><option value="">كل المندوبين</option></select>
+        <select class="fs" id="act-filter-days" onchange="renderActivity()">
+          <option value="7">آخر 7 أيام</option>
+          <option value="30" selected>آخر 30 يوم</option>
+          <option value="0">الكل</option>
+        </select>
+      </div>
+      <div class="tl-wrap" id="tl-wrap"></div>
+    </div>
+  </div>
+
+  <!-- TARGETS PAGE -->
+  <div class="page" id="page-targets">
+    <div class="tgt-page">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <div class="sch-title">🎯 أهداف المندوبين</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select class="fs" id="tgt-month">
+            <option value="0">يناير</option><option value="1">فبراير</option><option value="2">مارس</option>
+            <option value="3">أبريل</option><option value="4">مايو</option><option value="5">يونيو</option>
+            <option value="6">يوليو</option><option value="7">أغسطس</option><option value="8">سبتمبر</option>
+            <option value="9">أكتوبر</option><option value="10">نوفمبر</option><option value="11">ديسمبر</option>
+          </select>
+          <select class="fs" id="tgt-year">
+            <option value="2025">2025</option><option value="2026" selected>2026</option>
+          </select>
+        </div>
+      </div>
+      <div class="kpi-row" id="tgt-kpis" style="margin-bottom:20px"></div>
+      <div class="tgt-grid" id="tgt-grid"></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- ADD/EDIT MODAL -->
@@ -446,6 +618,35 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <div class="sync-status" id="sync-status"></div>
+
+<!-- APPOINTMENT MODAL -->
+<div class="overlay" id="appt-modal" onclick="if(event.target===this)closeApptModal()">
+  <div class="modal" style="max-width:460px">
+    <div class="mh"><span class="mt" id="appt-modal-title">إضافة موعد</span><span class="mc" onclick="closeApptModal()">×</span></div>
+    <div class="mb">
+      <input type="hidden" id="appt-edit-id">
+      <div class="fg"><label>العميل / الفرصة *</label>
+        <select id="appt-card"></select>
+      </div>
+      <div class="fr">
+        <div class="fg" style="margin-bottom:0"><label>التاريخ *</label><input type="date" id="appt-date"></div>
+        <div class="fg" style="margin-bottom:0"><label>الوقت</label><input type="time" id="appt-time" value="09:00"></div>
+      </div>
+      <div class="fg" style="margin-top:12px"><label>نوع الموعد</label>
+        <select id="appt-type">
+          <option>زيارة ميدانية</option><option>اجتماع</option><option>اتصال هاتفي</option>
+          <option>تقديم عرض</option><option>متابعة</option><option>توقيع عقد</option>
+        </select>
+      </div>
+      <div class="fg"><label>المندوب</label><select id="appt-rep"></select></div>
+      <div class="fg"><label>ملاحظات</label><textarea id="appt-notes" rows="2" placeholder="تفاصيل الموعد..."></textarea></div>
+      <div class="fg"><label>الحالة</label>
+        <select id="appt-status"><option value="upcoming">قادم</option><option value="done">منتهي</option><option value="cancelled">ملغي</option></select>
+      </div>
+      <button class="btn-save" onclick="saveAppt()" style="margin-top:0">💾 حفظ الموعد</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ════════════════════════════════════════════════════════════
@@ -1153,6 +1354,491 @@ function showSync(type,msg){
   clearTimeout(syncTimer);
   if(type!=='syncing') syncTimer=setTimeout(()=>el.classList.remove('show'),3000);
 }
+
+// ════════════════════════════════════════════════════════════
+// APPOINTMENTS
+// ════════════════════════════════════════════════════════════
+let appointments = [];
+let calDate = new Date();
+let apptEditId = null;
+
+async function loadAppts() {
+  const data = await sheetsGet({action:'getAppointments'});
+  if (data && data.data) {
+    appointments = data.data.map(r => ({
+      id:         r['رقم الموعد']   || '',
+      cardId:     r['رقم الفرصة']   || '',
+      clientName: r['العميل']        || '',
+      date:       r['التاريخ']       || '',
+      time:       r['الوقت']         || '',
+      type:       r['نوع الموعد']    || '',
+      rep:        r['المندوب']       || '',
+      notes:      r['الملاحظات']     || '',
+      status:     apptStatusKey(r['الحالة']) || 'upcoming',
+      createdAt:  r['timestamp']     || '',
+    }));
+  }
+  renderAppts();
+  renderCalendar();
+}
+
+function apptStatusKey(ar) {
+  if (ar==='منتهي')  return 'done';
+  if (ar==='ملغي')   return 'cancelled';
+  return 'upcoming';
+}
+
+function renderCalendar() {
+  const y = calDate.getFullYear();
+  const m = calDate.getMonth();
+  document.getElementById('cal-month-lbl').textContent =
+    new Date(y,m,1).toLocaleDateString('ar-SA',{month:'long',year:'numeric'});
+  const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  const first = new Date(y,m,1).getDay();
+  const total = new Date(y,m+1,0).getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+  let html = days.map(d=>`<div class="cal-day-lbl">${d}</div>`).join('');
+  for(let i=0;i<first;i++) html+=`<div class="cal-cell other-month"></div>`;
+  for(let d=1;d<=total;d++){
+    const date=new Date(y,m,d);
+    const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=date.getTime()===today.getTime();
+    const dayA=appointments.filter(a=>a.date===ds&&(curRole!=='مندوب'||a.rep===curUser));
+    html+=`<div class="cal-cell${isToday?' today':''}${dayA.length?' has-appt':''}" onclick="openApptModalDate('${ds}')">
+      <div class="cal-date">${d}</div>
+      ${dayA.slice(0,2).map(a=>`<div class="appt-dot ${getCardP(a.cardId)}">${a.time} ${a.clientName}</div>`).join('')}
+      ${dayA.length>2?`<div style="font-size:9px;color:var(--text-muted)">+${dayA.length-2}</div>`:''}
+    </div>`;
+  }
+  document.getElementById('cal-grid').innerHTML=html;
+}
+
+function getCardP(cardId){
+  const card=cards.find(c=>String(c.id)===String(cardId));
+  return card?card.priority:'p4';
+}
+
+function prevMonth(){calDate.setMonth(calDate.getMonth()-1);renderCalendar();}
+function nextMonth(){calDate.setMonth(calDate.getMonth()+1);renderCalendar();}
+
+function renderAppts(){
+  const repF    = document.getElementById('appt-filter-rep').value;
+  const statusF = document.getElementById('appt-filter-status').value;
+  const today   = new Date(); today.setHours(0,0,0,0);
+  let filtered  = appointments.filter(a=>{
+    if(curRole==='مندوب'&&a.rep!==curUser) return false;
+    if(repF&&a.rep!==repF) return false;
+    const ad=new Date(a.date); ad.setHours(0,0,0,0);
+    if(statusF==='upcoming') return a.status==='upcoming'&&ad>=today;
+    if(statusF==='today')    return ad.getTime()===today.getTime();
+    if(statusF==='overdue')  return a.status==='upcoming'&&ad<today;
+    if(statusF==='done')     return a.status==='done';
+    return true;
+  });
+  filtered.sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const list=document.getElementById('appt-list');
+  if(!filtered.length){list.innerHTML='<div class="empty-state">📭 لا توجد مواعيد</div>';return;}
+  const today2=new Date(); today2.setHours(0,0,0,0);
+  list.innerHTML=filtered.map(a=>{
+    const d=new Date(a.date); const ad=new Date(a.date); ad.setHours(0,0,0,0);
+    const isToday=ad.getTime()===today2.getTime();
+    const isOver=a.status==='upcoming'&&ad<today2;
+    const card=cards.find(c=>String(c.id)===String(a.cardId));
+    return`<div class="appt-card" style="${isOver?'border-color:#dc2626;background:#fff8f8':isToday?'border-color:var(--primary);background:#f0f5ff':''}">
+      <div class="appt-date-box" style="${isOver?'background:var(--p1-bg)':isToday?'background:var(--primary-light)':''}">
+        <div class="appt-day" style="${isOver?'color:var(--p1)':''}">${d.getDate()}</div>
+        <div class="appt-month-lbl">${d.toLocaleDateString('ar-SA',{month:'short'})}</div>
+      </div>
+      <div class="appt-info">
+        <div class="appt-name">
+          ${isToday?'<span class="today-badge">اليوم</span>':''}
+          ${isOver?'<span class="overdue-badge">متأخر</span>':''}
+          ${a.status==='done'?'<span class="done-badge">✅ منتهي</span>':''}
+          ${a.clientName||'—'}
+          ${card?`<span class="pb pb-${card.priority}" style="margin-right:6px">${card.priority.toUpperCase()}</span>`:''}
+        </div>
+        <div class="appt-meta">
+          <span>🕐 ${a.time||'—'}</span>
+          <span>📋 ${a.type||'—'}</span>
+          <span>👤 ${a.rep||'—'}</span>
+        </div>
+        ${a.notes?`<div style="margin-top:4px;font-size:11px;color:var(--text-muted)">${a.notes}</div>`:''}
+      </div>
+      <div class="appt-actions">
+        ${a.status==='upcoming'?`<button class="btn-xs" onclick="markApptDone('${a.id}')">✅</button>`:''}
+        <button class="btn-xs" onclick="editAppt('${a.id}')">✏️</button>
+        <button class="btn-xs danger" onclick="deleteAppt('${a.id}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openApptModal(){
+  apptEditId=null;
+  document.getElementById('appt-modal-title').textContent='إضافة موعد جديد';
+  document.getElementById('appt-edit-id').value='';
+  document.getElementById('appt-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('appt-time').value='09:00';
+  document.getElementById('appt-type').value='زيارة ميدانية';
+  document.getElementById('appt-notes').value='';
+  document.getElementById('appt-status').value='upcoming';
+  populateApptCard();
+  populateApptRep();
+  document.getElementById('appt-modal').classList.add('show');
+}
+function openApptModalDate(ds){openApptModal();document.getElementById('appt-date').value=ds;}
+function closeApptModal(){document.getElementById('appt-modal').classList.remove('show');}
+
+function populateApptCard(){
+  const sel=document.getElementById('appt-card');
+  sel.innerHTML='<option value="">— اختر عميل —</option>';
+  const list=curRole==='مندوب'?cards.filter(c=>c.rep===curUser&&c.col!=='lost'&&c.col!=='done'):cards.filter(c=>c.col!=='lost'&&c.col!=='done');
+  list.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name+' | '+c.service;sel.appendChild(o);});
+}
+function populateApptRep(){
+  const sel=document.getElementById('appt-rep');
+  sel.innerHTML='';
+  if(curRole==='مندوب'){sel.disabled=true;const o=document.createElement('option');o.value=curUser;o.textContent=curUser;sel.appendChild(o);}
+  else{sel.disabled=false;Object.keys(USERS).filter(n=>USERS[n].role!=='مدير').forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});}
+}
+
+function editAppt(id){
+  const a=appointments.find(x=>x.id===id);if(!a)return;
+  apptEditId=id;
+  document.getElementById('appt-modal-title').textContent='تعديل الموعد';
+  document.getElementById('appt-edit-id').value=id;
+  populateApptCard();
+  populateApptRep();
+  document.getElementById('appt-card').value=a.cardId||'';
+  document.getElementById('appt-date').value=a.date;
+  document.getElementById('appt-time').value=a.time||'09:00';
+  document.getElementById('appt-type').value=a.type;
+  document.getElementById('appt-rep').value=a.rep;
+  document.getElementById('appt-notes').value=a.notes||'';
+  document.getElementById('appt-status').value=a.status||'upcoming';
+  document.getElementById('appt-modal').classList.add('show');
+}
+
+async function saveAppt(){
+  const date=document.getElementById('appt-date').value;
+  if(!date){showSync('err','يرجى اختيار التاريخ');return;}
+  const cardId=document.getElementById('appt-card').value;
+  const card=cards.find(c=>String(c.id)===String(cardId));
+  const id=apptEditId||String(Date.now());
+  const appt={
+    id, cardId, clientName:card?card.name:'—',
+    date, time:document.getElementById('appt-time').value,
+    type:document.getElementById('appt-type').value,
+    rep:document.getElementById('appt-rep').value,
+    notes:document.getElementById('appt-notes').value.trim(),
+    status:document.getElementById('appt-status').value,
+    createdAt:apptEditId?(appointments.find(a=>a.id===apptEditId)||{}).createdAt||new Date().toISOString():new Date().toISOString(),
+  };
+  showSync('syncing','🔄 جاري الحفظ...');
+  const ok=await sheetsPost({type:'appointment',action:apptEditId?'update':'add',appointment:buildApptRow(appt)});
+  if(ok){
+    if(apptEditId){const i=appointments.findIndex(a=>a.id===apptEditId);if(i>=0)appointments[i]=appt;else appointments.push(appt);}
+    else appointments.push(appt);
+    logActivity(cardId,card?card.name:'—',`جدولة موعد: ${appt.type}`,curUser,`${date} ${appt.time}`);
+    closeApptModal();renderAppts();renderCalendar();
+    showSync('ok','✅ تم حفظ الموعد');
+  } else showSync('err','❌ فشل الحفظ');
+  apptEditId=null;
+}
+
+async function markApptDone(id){
+  const a=appointments.find(x=>x.id===id);if(!a)return;
+  a.status='done';
+  showSync('syncing','🔄 جاري الحفظ...');
+  const ok=await sheetsPost({type:'appointment',action:'update',appointment:buildApptRow(a)});
+  if(ok){logActivity(a.cardId,a.clientName,`إنجاز موعد: ${a.type}`,curUser,'');renderAppts();showSync('ok','✅ تم تحديد الموعد كمنتهي');}
+  else showSync('err','❌ فشل الحفظ');
+}
+
+async function deleteAppt(id){
+  if(!confirm('حذف هذا الموعد؟'))return;
+  const a=appointments.find(x=>x.id===id);
+  showSync('syncing','🔄 جاري الحذف...');
+  const ok=await sheetsPost({type:'appointment',action:'delete',appointment:{id}});
+  if(ok){appointments=appointments.filter(x=>x.id!==id);renderAppts();renderCalendar();showSync('ok','✅ تم الحذف');}
+  else showSync('err','❌ فشل الحذف');
+}
+
+function buildApptRow(a){
+  return{
+    id:a.id, cardId:a.cardId, clientName:a.clientName,
+    date:a.date, time:a.time, type:a.type, rep:a.rep,
+    notes:a.notes||'',
+    status:a.status==='done'?'منتهي':a.status==='cancelled'?'ملغي':'قادم',
+    timestamp:a.createdAt||new Date().toISOString()
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+// ACTIVITY LOG
+// ════════════════════════════════════════════════════════════
+let activityLog = [];
+
+async function loadActivity(){
+  const data=await sheetsGet({action:'getActivity'});
+  if(data&&data.data){
+    activityLog=data.data.map(r=>({
+      id:        r['رقم السجل']   ||'',
+      cardId:    r['رقم الفرصة'] ||'',
+      cardName:  r['اسم العميل'] ||'',
+      action:    r['الإجراء']    ||'',
+      user:      r['المندوب']    ||'',
+      notes:     r['الملاحظات'] ||'',
+      timestamp: r['timestamp']  ||'',
+    }));
+  }
+  renderActivity();
+  renderActStats();
+}
+
+async function logActivity(cardId,cardName,action,user,notes){
+  const entry={
+    id:String(Date.now()), cardId:String(cardId||''),
+    cardName:cardName||'', action, user, notes:notes||'',
+    timestamp:new Date().toISOString()
+  };
+  activityLog.unshift(entry);
+  await sheetsPost({type:'activity',action:'add',activity:{
+    id:entry.id, cardId:entry.cardId, cardName:entry.cardName,
+    action:entry.action, user:entry.user, notes:entry.notes,
+    timestamp:entry.timestamp
+  }});
+}
+
+function renderActStats(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const todayLog=activityLog.filter(e=>new Date(e.timestamp)>=today);
+  const weekLog=activityLog.filter(e=>new Date(e.timestamp)>=new Date(Date.now()-7*86400000));
+  document.getElementById('act-stats').innerHTML=`
+    <div class="kpi"><div class="kpi-label">إجمالي الأنشطة</div><div class="kpi-value">${activityLog.length}</div></div>
+    <div class="kpi"><div class="kpi-label">أنشطة اليوم</div><div class="kpi-value" style="color:var(--won)">${todayLog.length}</div></div>
+    <div class="kpi"><div class="kpi-label">هذا الأسبوع</div><div class="kpi-value" style="color:var(--p2)">${weekLog.length}</div></div>
+    <div class="kpi"><div class="kpi-label">آخر نشاط</div><div class="kpi-value" style="font-size:13px">${activityLog.length?timeAgo(activityLog[0].timestamp):'—'}</div></div>`;
+}
+
+function timeAgo(iso){
+  if(!iso)return'—';
+  const diff=Date.now()-new Date(iso).getTime();
+  const m=Math.floor(diff/60000),h=Math.floor(diff/3600000),d=Math.floor(diff/86400000);
+  if(m<1)return'الآن';if(m<60)return`منذ ${m} دقيقة`;
+  if(h<24)return`منذ ${h} ساعة`;if(d<7)return`منذ ${d} يوم`;
+  return new Date(iso).toLocaleDateString('ar-SA');
+}
+
+function getActClass(action){
+  if(action.includes('إضافة')||action.includes('تمت'))return{cls:'act-add',badge:'ab-add',lbl:'إضافة'};
+  if(action.includes('تعديل')||action.includes('تم تعديل'))return{cls:'act-edit',badge:'ab-edit',lbl:'تعديل'};
+  if(action.includes('نقل'))return{cls:'act-move',badge:'ab-move',lbl:'نقل'};
+  if(action.includes('حذف'))return{cls:'act-del',badge:'ab-del',lbl:'حذف'};
+  if(action.includes('موعد')||action.includes('جدولة'))return{cls:'act-appt',badge:'ab-appt',lbl:'موعد'};
+  return{cls:'',badge:'ab-def',lbl:'نشاط'};
+}
+
+function renderActivity(search=''){
+  const repF=document.getElementById('act-filter-rep').value;
+  const daysF=parseInt(document.getElementById('act-filter-days').value);
+  const cutoff=daysF?new Date(Date.now()-daysF*86400000):new Date(0);
+  let log=activityLog.filter(e=>{
+    if(curRole==='مندوب'&&e.user!==curUser)return false;
+    if(repF&&e.user!==repF)return false;
+    if(new Date(e.timestamp)<cutoff)return false;
+    if(search&&!e.cardName.includes(search)&&!e.action.includes(search)&&!e.user.includes(search))return false;
+    return true;
+  });
+  if(!log.length){document.getElementById('tl-wrap').innerHTML='<div class="empty-state">📭 لا توجد أنشطة</div>';return;}
+  const groups={};
+  log.forEach(e=>{
+    const dk=new Date(e.timestamp).toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    if(!groups[dk])groups[dk]=[];
+    groups[dk].push(e);
+  });
+  document.getElementById('tl-wrap').innerHTML=Object.entries(groups).map(([date,entries])=>`
+    <div class="tl-group">
+      <div class="tl-date-lbl">📅 ${date}</div>
+      ${entries.map(e=>{
+        const ac=getActClass(e.action);
+        return`<div class="tl-item ${ac.cls}">
+          <div class="tl-head">
+            <div>
+              <div class="tl-action"><span class="act-badge ${ac.badge}">${ac.lbl}</span>${e.action}</div>
+              <div class="tl-client">📁 ${e.cardName||'—'}</div>
+            </div>
+            <div class="tl-time">${new Date(e.timestamp).toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'})}</div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:3px">👤 ${e.user||'—'}</div>
+          ${e.notes?`<div class="tl-notes">💬 ${e.notes}</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+}
+
+function exportActivity(){
+  const rows=[['التاريخ','الوقت','الإجراء','العميل','المندوب','الملاحظات']];
+  activityLog.forEach(e=>{
+    const d=new Date(e.timestamp);
+    rows.push([d.toLocaleDateString('ar-SA'),d.toLocaleTimeString('ar-SA'),e.action,e.cardName||'',e.user||'',e.notes||'']);
+  });
+  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`Activity_${new Date().toLocaleDateString('ar-SA').replace(/\//g,'-')}.csv`;
+  a.click();
+}
+
+// ════════════════════════════════════════════════════════════
+// TARGETS
+// ════════════════════════════════════════════════════════════
+let targetsData = {};
+
+async function loadTargets(){
+  const data=await sheetsGet({action:'getTargets'});
+  if(data&&data.data){
+    targetsData={};
+    data.data.forEach(r=>{
+      const mk=r['الشهر']||'';
+      const rep=r['المندوب']||'';
+      if(!targetsData[mk])targetsData[mk]={};
+      targetsData[mk][rep]={
+        deals:   parseInt(r['هدف الصفقات'])||0,
+        revenue: parseInt(r['هدف الإيرادات (SR)'])||0,
+        visits:  parseInt(r['هدف الزيارات'])||0,
+      };
+    });
+  }
+  renderTargets();
+}
+
+function getMK(){
+  const m=document.getElementById('tgt-month').value;
+  const y=document.getElementById('tgt-year').value;
+  return `${y}-${m}`;
+}
+
+function getPct(a,t){return t?Math.min(Math.round((a/t)*100),999):0;}
+function pctBadge(p){
+  if(p>=100)return`<span class="pct-badge pct-great">🏆 ${p}%</span>`;
+  if(p>=75) return`<span class="pct-badge pct-ok">${p}%</span>`;
+  if(p>=50) return`<span class="pct-badge pct-warn">${p}%</span>`;
+  return`<span class="pct-badge pct-low">${p}%</span>`;
+}
+function barColor(p){return p>=100?'#16a34a':p>=75?'#2563c7':p>=50?'#ea7c1a':'#dc2626';}
+
+function renderTargets(){
+  const mk=getMK();
+  const month=parseInt(document.getElementById('tgt-month').value);
+  const year=parseInt(document.getElementById('tgt-year').value);
+  const reps=Object.keys(USERS).filter(n=>USERS[n].role==='مندوب'||USERS[n].role==='مشرف');
+  const visible=curRole==='مندوب'?reps.filter(r=>r===curUser):reps;
+  const isManager=curRole==='مدير'||curRole==='مشرف';
+
+  // Team KPIs
+  let tWon=0,tRev=0,tPipe=0,tTotal=0;
+  reps.forEach(r=>{const s=getRepStats(r,month,year);tWon+=s.won;tRev+=s.revenue;tPipe+=s.pipeline;tTotal+=s.total;});
+  document.getElementById('tgt-kpis').innerHTML=`
+    <div class="kpi"><div class="kpi-label">إجمالي الفرص</div><div class="kpi-value">${tTotal}</div></div>
+    <div class="kpi"><div class="kpi-label">صفقات مُغلقة</div><div class="kpi-value" style="color:var(--won)">${tWon}</div></div>
+    <div class="kpi"><div class="kpi-label">إيرادات محققة</div><div class="kpi-value" style="font-size:15px">SR ${tRev.toLocaleString()}</div></div>
+    <div class="kpi"><div class="kpi-label">خط الأنابيب</div><div class="kpi-value" style="font-size:15px">SR ${tPipe.toLocaleString()}</div></div>`;
+
+  document.getElementById('tgt-grid').innerHTML=visible.map(r=>{
+    const s=getRepStats(r,month,year);
+    const t=(targetsData[mk]||{})[r]||{deals:0,revenue:0,visits:0};
+    const visits=activityLog.filter(e=>e.user===r&&e.action.includes('زيارة')&&new Date(e.timestamp).getMonth()==month&&new Date(e.timestamp).getFullYear()==year).length;
+    const dp=getPct(s.won,t.deals),rp=getPct(s.revenue,t.revenue),vp=getPct(visits,t.visits);
+    return`<div class="tgt-card">
+      <div class="tgt-head">
+        <div class="tgt-av">${r[0]}</div>
+        <div><div class="tgt-name">${r}</div><div class="tgt-role">${USERS[r]?.role||'مندوب'}</div></div>
+      </div>
+      <div class="tgt-body">
+        <div class="tgt-row"><span class="tgt-lbl">🏆 الصفقات</span><div class="tgt-vals">${pctBadge(dp)}<span class="tgt-actual" style="color:${barColor(dp)}">${s.won}</span><span style="color:var(--text-muted)">/ ${t.deals||'—'}</span></div></div>
+        <div class="prg-wrap"><div class="prg-bar" style="width:${Math.min(dp,100)}%;background:${barColor(dp)}"></div></div>
+        <div class="tgt-row"><span class="tgt-lbl">💰 الإيرادات (SR)</span><div class="tgt-vals">${pctBadge(rp)}<span class="tgt-actual" style="color:${barColor(rp)}">${s.revenue.toLocaleString()}</span><span style="color:var(--text-muted)">/ ${t.revenue?t.revenue.toLocaleString():'—'}</span></div></div>
+        <div class="prg-wrap"><div class="prg-bar" style="width:${Math.min(rp,100)}%;background:${barColor(rp)}"></div></div>
+        <div class="tgt-row"><span class="tgt-lbl">🚗 الزيارات</span><div class="tgt-vals">${pctBadge(vp)}<span class="tgt-actual" style="color:${barColor(vp)}">${visits}</span><span style="color:var(--text-muted)">/ ${t.visits||'—'}</span></div></div>
+        <div class="prg-wrap"><div class="prg-bar" style="width:${Math.min(vp,100)}%;background:${barColor(vp)}"></div></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px">
+          <div style="background:var(--bg);border-radius:6px;padding:6px;text-align:center"><div style="font-size:15px;font-weight:700;color:var(--primary)">${s.total}</div><div style="font-size:10px;color:var(--text-muted)">فرص</div></div>
+          <div style="background:var(--bg);border-radius:6px;padding:6px;text-align:center"><div style="font-size:15px;font-weight:700;color:var(--p2)">${s.active}</div><div style="font-size:10px;color:var(--text-muted)">نشطة</div></div>
+          <div style="background:var(--bg);border-radius:6px;padding:6px;text-align:center"><div style="font-size:15px;font-weight:700;color:var(--text-muted)">${s.lost}</div><div style="font-size:10px;color:var(--text-muted)">خسرنا</div></div>
+        </div>
+      </div>
+      ${isManager?`<div class="tgt-footer">
+        <label>🎯 الأهداف:</label>
+        <input type="number" class="tgt-input" placeholder="صفقات" id="td-${r}" value="${t.deals||''}">
+        <input type="number" class="tgt-input" placeholder="إيرادات" id="tr-${r}" value="${t.revenue||''}">
+        <input type="number" class="tgt-input" placeholder="زيارات" id="tv-${r}" value="${t.visits||''}">
+        <button class="btn-save-tgt" onclick="saveTarget('${r}')">حفظ</button>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function getRepStats(rep,month,year){
+  const rc=cards.filter(c=>c.rep===rep);
+  const won=rc.filter(c=>c.col==='done').length;
+  const active=rc.filter(c=>c.col!=='done'&&c.col!=='lost').length;
+  const lost=rc.filter(c=>c.col==='lost').length;
+  const revenue=rc.filter(c=>c.col==='done').reduce((s,c)=>s+(parseFloat(c.value)||0),0);
+  const pipeline=rc.filter(c=>c.col!=='done'&&c.col!=='lost').reduce((s,c)=>s+(parseFloat(c.value)||0),0);
+  return{total:rc.length,won,active,lost,revenue,pipeline};
+}
+
+async function saveTarget(rep){
+  const mk=getMK();
+  const deals=  parseInt(document.getElementById(`td-${rep}`).value)||0;
+  const revenue=parseInt(document.getElementById(`tr-${rep}`).value)||0;
+  const visits= parseInt(document.getElementById(`tv-${rep}`).value)||0;
+  if(!targetsData[mk])targetsData[mk]={};
+  targetsData[mk][rep]={deals,revenue,visits};
+  showSync('syncing','🔄 جاري الحفظ...');
+  const ok=await sheetsPost({type:'target',action:'upsert',target:{monthKey:mk,rep,deals,revenue,visits}});
+  if(ok){renderTargets();showSync('ok',`✅ تم حفظ أهداف ${rep}`);}
+  else showSync('err','❌ فشل الحفظ');
+}
+
+// ════════════════════════════════════════════════════════════
+// UPDATE showPage to load data for new pages
+// ════════════════════════════════════════════════════════════
+const _origShowPage = showPage;
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='report')   renderReport();
+  if(id==='stats')    renderStats();
+  if(id==='schedule'){loadAppts();}
+  if(id==='activity'){loadActivity();populateActRep();}
+  if(id==='targets')  {loadTargets(); const now=new Date(); document.getElementById('tgt-month').value=now.getMonth(); document.getElementById('tgt-year').value=now.getFullYear();}
+}
+
+function populateActRep(){
+  const sel=document.getElementById('act-filter-rep');
+  while(sel.options.length>1)sel.remove(1);
+  Object.keys(USERS).filter(n=>USERS[n].role!=='مدير').forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);});
+  if(curRole==='مندوب'){sel.value=curUser;sel.disabled=true;}
+}
+
+function populateApptFilterRep(){
+  const sel=document.getElementById('appt-filter-rep');
+  while(sel.options.length>1)sel.remove(1);
+  Object.keys(USERS).filter(n=>USERS[n].role!=='مدير').forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);});
+  if(curRole==='مندوب'){sel.value=curUser;sel.disabled=true;}
+}
+
+// Also update startApp to populate appt filter rep
+const _origStartApp = startApp;
+async function startApp(){
+  await _origStartApp();
+  populateApptFilterRep();
+}
+
 </script>
 </body>
 </html>
