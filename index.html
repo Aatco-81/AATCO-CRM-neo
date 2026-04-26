@@ -78,16 +78,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
 .card.p4::before{background:var(--p4)}
 .card:hover{box-shadow:0 4px 16px rgba(26,74,138,.12)}
 .card.dragging{opacity:.35;cursor:grabbing}
-.card.urgency-urgent{border-color:var(--p1)!important;background:#fff8f8}
-.card.urgency-urgent.pulse{animation:pulse-border 1.5s infinite}
-.card.urgency-warning{border-color:var(--p2)!important;background:#fffaf5}
-.card.urgency-overdue{border-color:#6b7280!important;background:#f8f8f8;opacity:.85}
-.urgency-badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-top:3px;display:inline-block}
-.ub-urgent{background:#fee2e2;color:#dc2626}
-.ub-warning{background:#ffedd5;color:#ea7c1a}
-.ub-overdue{background:#f1f5f9;color:#6b7280}
-.days-left{font-size:10px;color:var(--text-muted);margin-top:2px}
-@keyframes pulse-border{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4)}50%{box-shadow:0 0 0 6px rgba(220,38,38,0)}}
 .card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
 .card-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.3}
 .csvc{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500;white-space:nowrap;margin-top:3px;display:inline-block}
@@ -189,7 +179,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
     <div class="fg">
       <label>اسم المندوب</label>
       <select id="lu">
-        <option value="">جاري تحميل المستخدمين...</option>
+        <option value="">— اختر اسمك —</option>
+        <option>أحمد السعيد</option><option>محمد العمري</option>
+        <option>خالد الزهراني</option><option>سارة المالكي</option>
+        <option value="مدير النظام">مدير النظام</option>
       </select>
     </div>
     <div class="fg">
@@ -198,11 +191,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
     </div>
     <button class="btn-primary" onclick="doLogin()">دخول</button>
     <div class="login-err" id="lerr">اسم المستخدم أو كلمة المرور غير صحيحة</div>
-    <div style="margin-top:14px;font-size:11px;color:#aaa;text-align:center">
-      <span id="load-status">🔄 جاري تحميل المستخدمين من Sheets...</span>
-      &nbsp;|&nbsp;
-      <span style="color:#1a4a8a;cursor:pointer;text-decoration:underline" onclick="forceLoadUsers()">إعادة تحميل</span>
-    </div>
+    <div style="margin-top:14px;font-size:11px;color:#aaa;text-align:center">المندوبين: 1234 &nbsp;|&nbsp; مدير النظام: admin &nbsp;|&nbsp; <span style="color:#1a4a8a;cursor:pointer" onclick="loadUsersFromSheets()">🔄 تحديث من Sheets</span></div>
   </div>
 </div>
 
@@ -211,9 +200,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
     <div class="tb-brand">🏢 <span>AATCO Elevators</span> إدارة العملاء</div>
     <div class="tb-nav">
       <button class="nb active" onclick="showPage('kanban',this)">لوحة المبيعات</button>
-      <a href="schedule.html" class="nb">المواعيد</a>
-      <a href="activity.html" class="nb">سجل النشاط</a>
-      <a href="targets.html" class="nb">الأهداف</a>
       <button class="nb" onclick="showPage('report',this)">التقرير اليومي</button>
       <button class="nb" id="stats-btn" onclick="showPage('stats',this)" style="display:none">إحصائيات المدير</button>
       <button class="nb" onclick="showPage('config',this)">ربط Google Sheets</button>
@@ -455,7 +441,7 @@ const COLS={new:'جديد',visit:'زيارة ميدانية',offer:'عرض سع�
 const PL={p1:'P1 — 3 أيام',p2:'P2 — 10 أيام',p3:'P3 — 14 يوم',p4:'P4 — متابعة'};
 let cards=JSON.parse(localStorage.getItem('aatco_cards')||'[]');
 let curUser='',curRole='',dragCard=null,placeholder=null,selPri='p2',selRes='',selAct='',idCtr=parseInt(localStorage.getItem('aatco_id')||'0');
-// sheetsUrl is now accessed via getSheetsUrl() from shared.js
+let sheetsUrl=localStorage.getItem('aatco_sheets')||'';
 
 // ── تحميل المستخدمين من Google Sheets ──
 async function loadUsersFromSheets(showMsg){
@@ -511,30 +497,21 @@ function doLogin(){
   if(usr.status&&usr.status!=='نشط ✅'){showErr('هذا الحساب موقوف — تواصل مع المدير');return;}
   if(usr.pass!==p){showErr('كلمة المرور غير صحيحة');return;}
   curUser=u; curRole=usr.role||'مندوب';
-  // ✅ Save session to localStorage (persists across pages)
-  localStorage.setItem('aatco_session', JSON.stringify({user:u, role:curRole, time:Date.now()}));
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='flex';
   document.getElementById('uname').textContent=u+' | '+curRole;
   document.getElementById('uav').textContent=u[0];
+  // Role-based access
   if(curRole==='مدير'||curRole==='مشرف'){
     document.getElementById('stats-btn').style.display='inline-block';
   }
   populateReps();
   if(curRole==='مندوب'){document.getElementById('rep-filter').value=u;filterRep(u);}
-  const sheetsUrl=getSheetsUrl();
   if(sheetsUrl) document.getElementById('surl').value=sheetsUrl;
   renderAll();
 }
 function showErr(m){const e=document.getElementById('lerr');e.style.display='block';e.textContent=m;}
-function doLogout(){
-  curUser='';curRole='';
-  localStorage.removeItem('aatco_session');
-  document.getElementById('login-screen').style.display='flex';
-  document.getElementById('app').style.display='none';
-  document.getElementById('lp').value='';
-  document.getElementById('lerr').style.display='none';
-}
+function doLogout(){curUser='';curRole='';document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('lp').value='';document.getElementById('lerr').style.display='none';}
 
 // NAV
 function showPage(id,btn){
@@ -622,12 +599,9 @@ function dDrop(e,col){
   if(placeholder&&placeholder.parentNode===ce){ce.insertBefore(dragCard,placeholder);ce.removeChild(placeholder);placeholder=null;}
   else ce.appendChild(dragCard);
   card.col=col;save();
-  if(old!==col){
-    addActivity(card.id, card.name, `نقل إلى ${COLS[col]}`, curUser, '');
-    toast(`تم نقل "${card.name}" إلى ${COLS[col]}`);
-  }
+  if(old!==col)toast(`تم نقل "${card.name}" إلى ${COLS[col]}`);
   updateCounts();updateKPIs();
-  if(getSheetsUrl())sync(card,'update');
+  if(sheetsUrl)sync(card,'update');
 }
 function getAfter(container,y){
   const els=[...container.querySelectorAll('.card:not(.dragging)')];
@@ -692,16 +666,13 @@ function saveCard(){
     notes:document.getElementById('fnotes').value.trim(),
     rep:document.getElementById('frep').value,
     col:eid?(cards.find(c=>c.id==eid)||{col:'new'}).col:'new',
-    date:new Date().toLocaleDateString('ar-SA'),
-    timestamp:new Date().toISOString()
+    date:new Date().toLocaleDateString('ar-SA')
   };
   if(eid){const i=cards.findIndex(c=>c.id==eid);cards[i]=d;}
   else cards.push(d);
   save();renderAll();closeM();
-  const actMsg = eid?`تم تعديل الفرصة`:`تمت إضافة الفرصة`;
-  addActivity(d.id, d.name, actMsg, curUser, d.notes||'');
   toast(eid?`تم تعديل "${name}"`:`تمت إضافة "${name}" بنجاح`);
-  if(getSheetsUrl())sync(d,eid?'update':'add');
+  if(sheetsUrl)sync(d,eid?'update':'add');
 }
 
 // VIEW
@@ -759,9 +730,8 @@ function delCard(id){
 }
 function moveCard(id,col){
   const c=cards.find(x=>x.id==id);c.col=col;save();renderAll();
-  addActivity(c.id, c.name, `نقل إلى ${COLS[col]}`, curUser, '');
   toast(`تم نقل "${c.name}" إلى ${COLS[col]}`);
-  if(getSheetsUrl())sync(c,'update');
+  if(sheetsUrl)sync(c,'update');
 }
 
 // FILTERS
@@ -908,41 +878,6 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 // SET DATE
 document.getElementById('rdate').value=new Date().toISOString().split('T')[0];
 
-// ── Urgency helpers (fallback if shared.js not loaded) ──
-function getUrgencyStatus(card){
-  if(typeof window._urgencyLoaded!=='undefined') return window._urgencyLoaded(card);
-  if(card.col==='done'||card.col==='lost') return 'closed';
-  if(card.priority==='p4') return 'p4';
-  const days=getDaysLeft(card);
-  if(days===null) return 'ok';
-  if(days<0) return 'overdue';
-  if(days<=1) return 'urgent';
-  if(days<=3) return 'warning';
-  return 'ok';
-}
-function getDaysLeft(card){
-  if(!card.timestamp) return null;
-  const pDays={p1:3,p2:10,p3:14,p4:30};
-  const days=pDays[card.priority]||30;
-  const dl=new Date(card.timestamp);
-  dl.setDate(dl.getDate()+days);
-  return Math.ceil((dl-new Date())/(1000*60*60*24));
-}
-const URGENCY_STYLES={
-  overdue:{border:'#6b7280',bg:'#f8f8f8',pulse:false},
-  urgent: {border:'#dc2626',bg:'#fff8f8',pulse:true},
-  warning:{border:'#ea7c1a',bg:'#fffaf5',pulse:false},
-  ok:{border:null,bg:null,pulse:false},
-  p4:{border:null,bg:null,pulse:false},
-  closed:{border:null,bg:null,pulse:false},
-};
-function addActivity(cardId,cardName,action,user,notes){
-  const log=JSON.parse(localStorage.getItem('aatco_activity')||'[]');
-  log.unshift({id:Date.now(),cardId,cardName,action,user,notes:notes||'',timestamp:new Date().toISOString()});
-  if(log.length>500)log.pop();
-  localStorage.setItem('aatco_activity',JSON.stringify(log));
-}
-
 // SAMPLE DATA
 if(cards.length===0){
   cards=[
@@ -956,6 +891,5 @@ if(cards.length===0){
   idCtr=6;save();
 }
 </script>
-<script src="shared.js"></script>
 </body>
 </html>
