@@ -823,6 +823,14 @@ function doLogout() {
 // ════════════════════════════════════════════════════════════
 // START APP
 // ════════════════════════════════════════════════════════════
+function populateApptFilterRep(){
+  const sel=document.getElementById('appt-filter-rep');
+  if(!sel)return;
+  while(sel.options.length>1)sel.remove(1);
+  Object.keys(USERS).filter(n=>USERS[n].role!=='مدير').forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);});
+  if(curRole==='مندوب'){sel.value=curUser;sel.disabled=true;}
+}
+
 async function startApp() {
   document.getElementById('app').style.display = 'flex';
   document.getElementById('uname').textContent = curUser + ' | ' + curRole;
@@ -1808,17 +1816,12 @@ async function saveTarget(rep){
 
 function populateActRep(){
   const sel=document.getElementById('act-filter-rep');
+  if(!sel)return;
   while(sel.options.length>1)sel.remove(1);
   Object.keys(USERS).filter(n=>USERS[n].role!=='مدير').forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);});
   if(curRole==='مندوب'){sel.value=curUser;sel.disabled=true;}
 }
 
-function populateApptFilterRep(){
-  const sel=document.getElementById('appt-filter-rep');
-  while(sel.options.length>1)sel.remove(1);
-  Object.keys(USERS).filter(n=>USERS[n].role!=='مدير').forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);});
-  if(curRole==='مندوب'){sel.value=curUser;sel.disabled=true;}
-}
 
 </script>
 </body>
