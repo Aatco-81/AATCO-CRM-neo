@@ -392,6 +392,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
         <div class="fg" style="margin-bottom:0"><label>عدد الأدوار</label><input id="ffl" type="number" placeholder="8" min="1"></div>
       </div>
       <div class="fr" style="margin-top:12px">
+        <div class="fg" style="margin-bottom:0"><label>عدد المصاعد</label><input id="felev" type="number" placeholder="2" min="1"></div>
+        <div class="fg" style="margin-bottom:0"></div>
+      </div>
+      <div class="fr" style="margin-top:12px">
         <div class="fg" style="margin-bottom:0"><label>القيمة المتوقعة (SR)</label><input id="fval" type="number" placeholder="50000"></div>
         <div class="fg" style="margin-bottom:0"><label>نوع الخدمة</label>
           <select id="fsvc"><option>تركيب مصعد جديد</option><option>صيانة مصاعد</option><option>تجديد مصعد</option></select>
@@ -655,6 +659,7 @@ async function loadCards(showMsg) {
       address:   row['عنوان المبنى']      || '',
       btype:     row['نوع المبنى']        || '',
       floors:    row['عدد الأدوار']       || '',
+      elevators: row['عدد المصاعد']       || '',
       service:   row['نوع الخدمة']        || '',
       col:       colKey(row['المرحلة'])   || 'new',
       priority:  (row['الأولوية']||'P2').toLowerCase(),
@@ -722,7 +727,7 @@ function appendCard(c) {
     </div>
     ${c.cname?`<div class="ci">👤 ${c.cname}${c.ctitle?' — '+c.ctitle:''}</div>`:''}
     <div class="ci">📍 ${c.region}${c.address?' | '+c.address:''}</div>
-    <div class="ci">🏢 ${c.btype} | ${c.floors} أدوار | 📞 ${c.phone}</div>
+    <div class="ci">🏢 ${c.btype} | ${c.floors} أدوار${c.elevators?' | 🛗 '+c.elevators+' مصعد':''} | 📞 ${c.phone}</div>
     ${c.action?`<div class="ci">⚡ ${c.action}</div>`:''}
     ${c.notes?`<div class="cr ${rc}">${c.notes}</div>`:''}
     <div class="cf">
@@ -832,7 +837,7 @@ function getAfter(container,y){
 function openNew() {
   document.getElementById('eid').value='';
   document.getElementById('mtitle').textContent='إضافة فرصة جديدة';
-  ['fn','fph','fcname','fctitle','faddr','ffl','fval','fnotes'].forEach(id=>document.getElementById(id).value='');
+  ['fn','fph','fcname','fctitle','faddr','ffl','felev','fval','fnotes'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('freg').value='جدة';
   document.getElementById('fbt').value='سكني';
   document.getElementById('fsvc').value='تركيب مصعد جديد';
@@ -893,6 +898,7 @@ async function saveCard(){
     address: document.getElementById('faddr').value.trim()||'',
     btype:   document.getElementById('fbt').value,
     floors:  document.getElementById('ffl').value||'',
+    elevators: document.getElementById('felev').value||'',
     value:   document.getElementById('fval').value||'0',
     service: document.getElementById('fsvc').value,
     priority:document.getElementById('fpri').value||'p2',
@@ -941,7 +947,7 @@ function openView(id){
         ${vr('الاسم',c.name)}${vr('الهاتف',c.phone||'—')}
         ${vr('الشخص المسؤول',c.cname||'—')}${vr('المسمى الوظيفي',c.ctitle||'—')}
         ${vr('المدينة',c.region)}${vr('العنوان',c.address||'—')}
-        ${vr('نوع المبنى',c.btype)}${vr('الأدوار',c.floors||'—')}
+        ${vr('نوع المبنى',c.btype)}${vr('الأدوار',c.floors||'—')}${vr('عدد المصاعد',c.elevators||'—')}
         ${vr('الخدمة',c.service)}
         ${vr('القيمة',c.value&&c.value!='0'?'SR '+Number(c.value).toLocaleString():'—')}
         ${vr('الأولوية',`<span class="pb pb-${c.priority}">${PL[c.priority]}</span>`)}
@@ -977,6 +983,7 @@ function editCard(id){
   document.getElementById('freg').value=c.region;
   document.getElementById('fbt').value=c.btype;
   document.getElementById('ffl').value=c.floors||'';
+  document.getElementById('felev').value=c.elevators||'';
   document.getElementById('fval').value=c.value||'';
   document.getElementById('fsvc').value=c.service;
   document.getElementById('fnotes').value=c.notes||'';
@@ -1089,8 +1096,8 @@ function saveConfig(){
 // EXPORT
 // ════════════════════════════════════════════════════════════
 function exportCSV(){
-  const rows=[['العميل','الشخص المسؤول','الهاتف','المدينة','العنوان','نوع المبنى','الأدوار','الخدمة','المرحلة','الأولوية','إجراء المندوب','النتيجة','الملاحظات','المندوب','القيمة','التاريخ']];
-  cards.forEach(c=>rows.push([c.name,c.cname||'',c.phone||'',c.region,c.address||'',c.btype,c.floors||'',c.service,COLS[c.col],c.priority.toUpperCase(),c.action||'',RESULTS[c.result]||'',c.notes||'',c.rep,c.value||'',c.timestamp?new Date(c.timestamp).toLocaleDateString('ar-SA'):'']));
+  const rows=[['العميل','الشخص المسؤول','الهاتف','المدينة','العنوان','نوع المبنى','الأدوار','عدد المصاعد','الخدمة','المرحلة','الأولوية','إجراء المندوب','النتيجة','الملاحظات','المندوب','القيمة','التاريخ']];
+  cards.forEach(c=>rows.push([c.name,c.cname||'',c.phone||'',c.region,c.address||'',c.btype,c.floors||'',c.elevators||'',c.service,COLS[c.col],c.priority.toUpperCase(),c.action||'',RESULTS[c.result]||'',c.notes||'',c.rep,c.value||'',c.timestamp?new Date(c.timestamp).toLocaleDateString('ar-SA'):'']));
   const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
