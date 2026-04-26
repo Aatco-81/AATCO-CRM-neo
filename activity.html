@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AATCO — سجل النشاط</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#1a4a8a;--primary-dark:#123570;--primary-light:#e8f0fb;--accent:#2563c7;--bg:#f0f4fa;--border:#dde4f0;--text:#1a2340;--text-muted:#6b7a9a;--won:#16a34a;--won-bg:#f0fdf4;--p1:#dc2626;--p1-bg:#fef2f2;--radius:10px;--shadow:0 2px 12px rgba(26,74,138,0.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl}
+.topbar{background:var(--primary);color:white;padding:0 20px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.tb-brand{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700}
+.tb-brand span{font-size:12px;opacity:.7;border-right:1px solid rgba(255,255,255,.3);padding-right:10px;margin-right:4px;font-weight:400}
+.tb-nav{display:flex;gap:4px}
+.nb{padding:6px 14px;border-radius:6px;font-size:13px;font-family:'Tajawal',sans-serif;font-weight:500;cursor:pointer;border:none;color:rgba(255,255,255,.8);background:transparent;transition:all .15s;text-decoration:none;display:inline-block}
+.nb:hover,.nb.active{background:rgba(255,255,255,.15);color:white}
+.tb-user{display:flex;align-items:center;gap:8px;font-size:13px}
+.uav{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.btn-out{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:4px 10px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Tajawal',sans-serif}
+.page-body{padding:24px;max-width:1000px;margin:0 auto}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.page-title{font-size:20px;font-weight:700;color:var(--primary)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.fs{border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;font-size:13px;font-family:'Tajawal',sans-serif;outline:none;color:var(--text);background:white}
+.si{border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:13px;font-family:'Tajawal',sans-serif;outline:none;width:200px}
+.btn-primary{background:var(--primary);color:white;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer}
+
+/* Timeline */
+.timeline{position:relative;padding-right:20px}
+.timeline::before{content:'';position:absolute;right:8px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl-group{margin-bottom:24px}
+.tl-date{font-size:13px;font-weight:700;color:var(--primary);background:var(--primary-light);padding:5px 12px;border-radius:6px;display:inline-block;margin-bottom:12px;margin-right:-20px}
+.tl-item{background:white;border-radius:var(--radius);border:1px solid var(--border);padding:12px 16px;margin-bottom:8px;margin-right:12px;position:relative;box-shadow:var(--shadow)}
+.tl-item::before{content:'';position:absolute;right:-19px;top:16px;width:10px;height:10px;border-radius:50%;background:var(--primary);border:2px solid white;box-shadow:0 0 0 2px var(--primary)}
+.tl-item.action-add::before{background:var(--won)}
+.tl-item.action-edit::before{background:var(--p3)}
+.tl-item.action-move::before{background:var(--p2)}
+.tl-item.action-delete::before{background:var(--p1)}
+.tl-item.action-appt::before{background:var(--p4)}
+.tl-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.tl-action{font-size:13px;font-weight:700;color:var(--text)}
+.tl-client{font-size:12px;color:var(--primary);font-weight:600}
+.tl-time{font-size:11px;color:var(--text-muted);white-space:nowrap}
+.tl-meta{display:flex;gap:10px;margin-top:5px;flex-wrap:wrap}
+.tl-user{font-size:11px;color:var(--text-muted)}
+.tl-notes{font-size:12px;color:var(--text-muted);margin-top:5px;padding:5px 8px;background:var(--bg);border-radius:5px}
+.empty-state{text-align:center;padding:60px;color:var(--text-muted);font-size:14px}
+.action-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.ab-add{background:var(--won-bg);color:var(--won)}
+.ab-edit{background:var(--p3-bg);color:var(--p3)}
+.ab-move{background:#fff7ed;color:var(--p2)}
+.ab-delete{background:var(--p1-bg);color:var(--p1)}
+.ab-appt{background:#eff6ff;color:var(--p4)}
+.ab-default{background:var(--primary-light);color:var(--primary)}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{background:white;border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.stat-label{font-size:11px;color:var(--text-muted);margin-bottom:4px}
+.stat-val{font-size:22px;font-weight:700;color:var(--primary)}
+</style>
+</head>
+<body>
+
+<div class="topbar" id="topbar"></div>
+
+<div class="page-body">
+  <div class="page-header">
+    <div class="page-title">📋 سجل النشاط الكامل</div>
+    <button class="btn-primary" onclick="exportActivity()">⬇ تصدير CSV</button>
+  </div>
+
+  <div class="stats-row" id="stats-row"></div>
+
+  <div class="filters">
+    <input class="si" type="text" placeholder="🔍 بحث في النشاط..." oninput="renderActivity(this.value)">
+    <select class="fs" id="filter-rep" onchange="renderActivity()">
+      <option value="">كل المندوبين</option>
+    </select>
+    <select class="fs" id="filter-action" onchange="renderActivity()">
+      <option value="">كل الإجراءات</option>
+      <option value="إضافة">إضافة فرصة</option>
+      <option value="تعديل">تعديل</option>
+      <option value="نقل">نقل مرحلة</option>
+      <option value="موعد">مواعيد</option>
+    </select>
+    <select class="fs" id="filter-days" onchange="renderActivity()">
+      <option value="7">آخر 7 أيام</option>
+      <option value="30" selected>آخر 30 يوم</option>
+      <option value="90">آخر 3 أشهر</option>
+      <option value="0">الكل</option>
+    </select>
+  </div>
+
+  <div class="timeline" id="timeline"></div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+let session = null;
+
+window.addEventListener('load', () => {
+  session = requireAuth();
+  if (!session) return;
+  buildTopbar('activity');
+  populateReps();
+  renderStats();
+  renderActivity();
+});
+
+function populateReps() {
+  const users = getUsers();
+  const sel = document.getElementById('filter-rep');
+  Object.keys(users).filter(n => users[n].role !== 'مدير').forEach(r => {
+    const o = document.createElement('option'); o.value = r; o.textContent = r; sel.appendChild(o);
+  });
+  if (session.role === 'مندوب') { sel.value = session.user; sel.disabled = true; }
+}
+
+function renderStats() {
+  const log = getActivity();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayLog = log.filter(e => new Date(e.timestamp) >= today);
+  const weekAgo = new Date(Date.now() - 7*86400000);
+  const weekLog = log.filter(e => new Date(e.timestamp) >= weekAgo);
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat"><div class="stat-label">إجمالي الأنشطة</div><div class="stat-val">${log.length}</div></div>
+    <div class="stat"><div class="stat-label">أنشطة اليوم</div><div class="stat-val" style="color:var(--won)">${todayLog.length}</div></div>
+    <div class="stat"><div class="stat-label">هذا الأسبوع</div><div class="stat-val" style="color:var(--p2)">${weekLog.length}</div></div>
+    <div class="stat"><div class="stat-label">آخر نشاط</div><div class="stat-val" style="font-size:13px">${log.length?timeAgo(log[0].timestamp):'—'}</div></div>
+  `;
+}
+
+function getActionClass(action) {
+  if (action.includes('إضافة')||action.includes('تمت إضافة')) return {cls:'action-add', badge:'ab-add', label:'إضافة'};
+  if (action.includes('تعديل')||action.includes('تم تعديل'))   return {cls:'action-edit', badge:'ab-edit', label:'تعديل'};
+  if (action.includes('نقل'))   return {cls:'action-move', badge:'ab-move', label:'نقل'};
+  if (action.includes('حذف'))   return {cls:'action-delete', badge:'ab-delete', label:'حذف'};
+  if (action.includes('موعد')||action.includes('جدولة')) return {cls:'action-appt', badge:'ab-appt', label:'موعد'};
+  return {cls:'', badge:'ab-default', label:'نشاط'};
+}
+
+function renderActivity(search='') {
+  const repFilter    = document.getElementById('filter-rep').value;
+  const actionFilter = document.getElementById('filter-action').value;
+  const daysFilter   = parseInt(document.getElementById('filter-days').value);
+  const cutoff = daysFilter ? new Date(Date.now() - daysFilter*86400000) : new Date(0);
+
+  let log = getActivity().filter(e => {
+    if (session.role === 'مندوب' && e.user !== session.user) return false;
+    if (repFilter && e.user !== repFilter) return false;
+    if (actionFilter && !e.action.includes(actionFilter)) return false;
+    if (new Date(e.timestamp) < cutoff) return false;
+    if (search && !e.cardName.includes(search) && !e.action.includes(search) && !e.user.includes(search)) return false;
+    return true;
+  });
+
+  if (log.length === 0) {
+    document.getElementById('timeline').innerHTML = '<div class="empty-state">📭 لا توجد أنشطة مسجلة</div>';
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  log.forEach(e => {
+    const dateKey = new Date(e.timestamp).toLocaleDateString('ar-SA', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    if (!groups[dateKey]) groups[dateKey] = [];
+    groups[dateKey].push(e);
+  });
+
+  const html = Object.entries(groups).map(([date, entries]) => `
+    <div class="tl-group">
+      <div class="tl-date">📅 ${date}</div>
+      ${entries.map(e => {
+        const ac = getActionClass(e.action);
+        return `
+        <div class="tl-item ${ac.cls}">
+          <div class="tl-head">
+            <div>
+              <div class="tl-action">
+                <span class="action-badge ${ac.badge}">${ac.label}</span>
+                &nbsp;${e.action}
+              </div>
+              <div class="tl-client">📁 ${e.cardName||'—'}</div>
+            </div>
+            <div class="tl-time">${new Date(e.timestamp).toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'})}</div>
+          </div>
+          <div class="tl-meta">
+            <span class="tl-user">👤 ${e.user||'—'}</span>
+          </div>
+          ${e.notes?`<div class="tl-notes">💬 ${e.notes}</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+
+  document.getElementById('timeline').innerHTML = html;
+}
+
+function exportActivity() {
+  const log = getActivity();
+  const rows = [['التاريخ','الوقت','الإجراء','العميل','المندوب','الملاحظات']];
+  log.forEach(e => {
+    const d = new Date(e.timestamp);
+    rows.push([d.toLocaleDateString('ar-SA'), d.toLocaleTimeString('ar-SA'), e.action, e.cardName||'', e.user||'', e.notes||'']);
+  });
+  const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download = `AATCO_Activity_${new Date().toLocaleDateString('ar-SA').replace(/\//g,'-')}.csv`;
+  a.click();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AATCO — أهداف المندوبين</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#1a4a8a;--primary-dark:#123570;--primary-light:#e8f0fb;--accent:#2563c7;--bg:#f0f4fa;--border:#dde4f0;--text:#1a2340;--text-muted:#6b7a9a;--won:#16a34a;--won-bg:#f0fdf4;--p1:#dc2626;--p1-bg:#fef2f2;--p2:#ea7c1a;--p3:#ca9e00;--p3-bg:#fefce8;--p4:#2563c7;--radius:10px;--shadow:0 2px 12px rgba(26,74,138,0.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl}
+.topbar{background:var(--primary);color:white;padding:0 20px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.tb-brand{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700}
+.tb-brand span{font-size:12px;opacity:.7;border-right:1px solid rgba(255,255,255,.3);padding-right:10px;margin-right:4px;font-weight:400}
+.tb-nav{display:flex;gap:4px}
+.nb{padding:6px 14px;border-radius:6px;font-size:13px;font-family:'Tajawal',sans-serif;font-weight:500;cursor:pointer;border:none;color:rgba(255,255,255,.8);background:transparent;transition:all .15s;text-decoration:none;display:inline-block}
+.nb:hover,.nb.active{background:rgba(255,255,255,.15);color:white}
+.tb-user{display:flex;align-items:center;gap:8px;font-size:13px}
+.uav{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.btn-out{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:4px 10px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Tajawal',sans-serif}
+.page-body{padding:24px;max-width:1100px;margin:0 auto}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.page-title{font-size:20px;font-weight:700;color:var(--primary)}
+.btn-primary{background:var(--primary);color:white;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer;transition:background .2s}
+.btn-primary:hover{background:var(--primary-dark)}
+.month-selector{display:flex;align-items:center;gap:10px;background:white;padding:10px 16px;border-radius:var(--radius);border:1px solid var(--border);margin-bottom:20px;box-shadow:var(--shadow)}
+.month-selector label{font-size:13px;font-weight:500;color:var(--text-muted)}
+.month-selector select,.month-selector input{border:1.5px solid var(--border);border-radius:7px;padding:6px 10px;font-size:13px;font-family:'Tajawal',sans-serif;outline:none}
+
+/* Summary KPIs */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.kpi{background:white;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.kpi-label{font-size:12px;color:var(--text-muted);margin-bottom:6px}
+.kpi-value{font-size:26px;font-weight:700;color:var(--primary)}
+.kpi-sub{font-size:11px;margin-top:3px;color:var(--text-muted)}
+
+/* Rep cards */
+.rep-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.rep-card{background:white;border-radius:var(--radius);border:1.5px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+.rep-head{padding:16px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.rep-av{width:42px;height:42px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+.rep-name{font-size:15px;font-weight:700;color:var(--text)}
+.rep-role{font-size:11px;color:var(--text-muted)}
+.rep-body{padding:16px 18px}
+.target-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.target-label{font-size:13px;color:var(--text-muted);font-weight:500}
+.target-vals{display:flex;align-items:center;gap:8px;font-size:13px}
+.target-actual{font-weight:700;font-size:16px}
+.target-sep{color:var(--border)}
+.target-goal{color:var(--text-muted)}
+/* Progress bar */
+.progress-wrap{background:var(--bg);border-radius:6px;height:10px;overflow:hidden;margin-bottom:14px}
+.progress-bar{height:100%;border-radius:6px;transition:width .6s ease}
+.pct-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:6px}
+.pct-great{background:var(--won-bg);color:var(--won)}
+.pct-ok{background:#eff6ff;color:var(--p4)}
+.pct-warn{background:#fff7ed;color:var(--p2)}
+.pct-low{background:var(--p1-bg);color:var(--p1)}
+/* Set target area */
+.set-target{border-top:1px solid var(--border);padding:12px 18px;background:var(--bg);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.set-target label{font-size:12px;color:var(--text-muted);font-weight:500}
+.set-target input{border:1.5px solid var(--border);border-radius:6px;padding:5px 10px;font-size:13px;font-family:'Tajawal',sans-serif;width:100px;outline:none}
+.set-target input:focus{border-color:var(--accent)}
+.btn-sm{padding:5px 14px;border-radius:6px;font-size:12px;font-family:'Tajawal',sans-serif;cursor:pointer;background:var(--primary);color:white;border:none;font-weight:500}
+.btn-sm:hover{background:var(--primary-dark)}
+/* Trend */
+.trend-up{color:var(--won);font-size:12px}
+.trend-dn{color:var(--p1);font-size:12px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--primary);color:white;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.manager-only{display:none}
+</style>
+</head>
+<body>
+
+<div class="topbar" id="topbar"></div>
+
+<div class="page-body">
+  <div class="page-header">
+    <div class="page-title">🎯 أهداف المندوبين</div>
+    <div style="font-size:13px;color:var(--text-muted)" id="last-updated"></div>
+  </div>
+
+  <!-- Month selector -->
+  <div class="month-selector">
+    <label>الشهر:</label>
+    <select id="sel-month" onchange="renderAll()">
+      <option value="0">يناير</option><option value="1">فبراير</option>
+      <option value="2">مارس</option><option value="3">أبريل</option>
+      <option value="4">مايو</option><option value="5">يونيو</option>
+      <option value="6">يوليو</option><option value="7">أغسطس</option>
+      <option value="8">سبتمبر</option><option value="9">أكتوبر</option>
+      <option value="10">نوفمبر</option><option value="11">ديسمبر</option>
+    </select>
+    <select id="sel-year" onchange="renderAll()">
+      <option value="2024">2024</option>
+      <option value="2025">2025</option>
+      <option value="2026" selected>2026</option>
+    </select>
+  </div>
+
+  <!-- Team KPIs -->
+  <div class="kpi-row" id="kpi-row"></div>
+
+  <!-- Rep cards -->
+  <div class="rep-grid" id="rep-grid"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script>
+let session = null;
+let targets = {};
+
+window.addEventListener('load', () => {
+  session = requireAuth();
+  if (!session) return;
+  buildTopbar('targets');
+  // Set current month/year
+  const now = new Date();
+  document.getElementById('sel-month').value = now.getMonth();
+  document.getElementById('sel-year').value = now.getFullYear();
+  targets = getTargets();
+  renderAll();
+});
+
+function getMonthKey() {
+  return `${document.getElementById('sel-year').value}-${document.getElementById('sel-month').value}`;
+}
+
+function getRepStats(repName, month, year) {
+  const cards = getCards();
+  // Filter cards created this month/year
+  const repCards = cards.filter(c => {
+    if (c.rep !== repName) return false;
+    if (!c.timestamp) return true; // include old cards without timestamp
+    const d = new Date(c.timestamp);
+    return d.getMonth() == month && d.getFullYear() == year;
+  });
+  const allRepCards = cards.filter(c => c.rep === repName);
+
+  return {
+    total:    repCards.length,
+    won:      repCards.filter(c => c.col === 'done').length,
+    active:   repCards.filter(c => c.col !== 'done' && c.col !== 'lost').length,
+    lost:     repCards.filter(c => c.col === 'lost').length,
+    revenue:  repCards.filter(c => c.col === 'done').reduce((s,c) => s+(parseFloat(c.value)||0), 0),
+    pipeline: repCards.filter(c => c.col !== 'done' && c.col !== 'lost').reduce((s,c) => s+(parseFloat(c.value)||0), 0),
+    totalAll: allRepCards.length,
+  };
+}
+
+function getPct(actual, target) {
+  if (!target) return 0;
+  return Math.min(Math.round((actual/target)*100), 100);
+}
+
+function pctBadge(pct) {
+  if (pct >= 100) return `<span class="pct-badge pct-great">🏆 ${pct}%</span>`;
+  if (pct >= 75)  return `<span class="pct-badge pct-ok">${pct}%</span>`;
+  if (pct >= 50)  return `<span class="pct-badge pct-warn">${pct}%</span>`;
+  return `<span class="pct-badge pct-low">${pct}%</span>`;
+}
+
+function barColor(pct) {
+  if (pct >= 100) return '#16a34a';
+  if (pct >= 75)  return '#2563c7';
+  if (pct >= 50)  return '#ea7c1a';
+  return '#dc2626';
+}
+
+function renderAll() {
+  const month = parseInt(document.getElementById('sel-month').value);
+  const year  = parseInt(document.getElementById('sel-year').value);
+  const mk    = getMonthKey();
+  const users = getUsers();
+  const reps  = Object.keys(users).filter(n => users[n].role === 'مندوب' || users[n].role === 'مشرف');
+
+  // If مندوب — only show themselves
+  const visibleReps = session.role === 'مندوب' ? reps.filter(r => r === session.user) : reps;
+
+  // Team KPIs
+  let teamWon=0, teamRev=0, teamPipe=0, teamTotal=0;
+  reps.forEach(r => {
+    const s = getRepStats(r, month, year);
+    teamWon   += s.won;
+    teamRev   += s.revenue;
+    teamPipe  += s.pipeline;
+    teamTotal += s.total;
+  });
+
+  document.getElementById('kpi-row').innerHTML = `
+    <div class="kpi"><div class="kpi-label">إجمالي الفرص هذا الشهر</div><div class="kpi-value">${teamTotal}</div></div>
+    <div class="kpi"><div class="kpi-label">صفقات مُغلقة</div><div class="kpi-value" style="color:var(--won)">${teamWon}</div></div>
+    <div class="kpi"><div class="kpi-label">إيرادات محققة</div><div class="kpi-value" style="font-size:18px">SR ${teamRev.toLocaleString()}</div></div>
+    <div class="kpi"><div class="kpi-label">خط الأنابيب</div><div class="kpi-value" style="font-size:18px">SR ${teamPipe.toLocaleString()}</div></div>
+  `;
+
+  // Rep cards
+  document.getElementById('rep-grid').innerHTML = visibleReps.map(rep => {
+    const s = getRepStats(rep, month, year);
+    const t = (targets[mk]||{})[rep] || { deals:0, revenue:0, visits:0 };
+
+    // Count visits from activity
+    const log = getActivity();
+    const visits = log.filter(e =>
+      e.user === rep &&
+      e.action.includes('زيارة') &&
+      new Date(e.timestamp).getMonth() == month &&
+      new Date(e.timestamp).getFullYear() == year
+    ).length;
+
+    const dealsPct   = getPct(s.won, t.deals);
+    const revPct     = getPct(s.revenue, t.revenue);
+    const visitsPct  = getPct(visits, t.visits);
+    const isManager  = session.role === 'مدير' || session.role === 'مشرف';
+
+    return `
+    <div class="rep-card">
+      <div class="rep-head">
+        <div class="rep-av">${rep[0]}</div>
+        <div>
+          <div class="rep-name">${rep}</div>
+          <div class="rep-role">${users[rep]?.role||'مندوب'} &nbsp;|&nbsp; ${users[rep]?.region||''}</div>
+        </div>
+      </div>
+      <div class="rep-body">
+
+        <!-- Deals -->
+        <div class="target-row">
+          <span class="target-label">🏆 الصفقات المُغلقة</span>
+          <div class="target-vals">
+            ${pctBadge(dealsPct)}
+            <span class="target-actual" style="color:${barColor(dealsPct)}">${s.won}</span>
+            <span class="target-sep">/</span>
+            <span class="target-goal">${t.deals||'—'}</span>
+          </div>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" style="width:${dealsPct}%;background:${barColor(dealsPct)}"></div></div>
+
+        <!-- Revenue -->
+        <div class="target-row">
+          <span class="target-label">💰 الإيرادات (SR)</span>
+          <div class="target-vals">
+            ${pctBadge(revPct)}
+            <span class="target-actual" style="color:${barColor(revPct)}">${s.revenue.toLocaleString()}</span>
+            <span class="target-sep">/</span>
+            <span class="target-goal">${t.revenue?t.revenue.toLocaleString():'—'}</span>
+          </div>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" style="width:${revPct}%;background:${barColor(revPct)}"></div></div>
+
+        <!-- Visits -->
+        <div class="target-row">
+          <span class="target-label">🚗 الزيارات الميدانية</span>
+          <div class="target-vals">
+            ${pctBadge(visitsPct)}
+            <span class="target-actual" style="color:${barColor(visitsPct)}">${visits}</span>
+            <span class="target-sep">/</span>
+            <span class="target-goal">${t.visits||'—'}</span>
+          </div>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" style="width:${visitsPct}%;background:${barColor(visitsPct)}"></div></div>
+
+        <!-- Extra stats -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px">
+          <div style="background:var(--bg);border-radius:6px;padding:8px;text-align:center">
+            <div style="font-size:16px;font-weight:700;color:var(--primary)">${s.total}</div>
+            <div style="font-size:10px;color:var(--text-muted)">إجمالي الفرص</div>
+          </div>
+          <div style="background:var(--bg);border-radius:6px;padding:8px;text-align:center">
+            <div style="font-size:16px;font-weight:700;color:var(--p2)">${s.active}</div>
+            <div style="font-size:10px;color:var(--text-muted)">نشطة</div>
+          </div>
+          <div style="background:var(--bg);border-radius:6px;padding:8px;text-align:center">
+            <div style="font-size:16px;font-weight:700;color:var(--text-muted)">${s.lost}</div>
+            <div style="font-size:10px;color:var(--text-muted)">خسرنا</div>
+          </div>
+        </div>
+      </div>
+
+      ${isManager ? `
+      <div class="set-target">
+        <label>🎯 الأهداف الشهرية:</label>
+        <input type="number" placeholder="صفقات" id="t-deals-${rep}" value="${t.deals||''}" min="0" style="width:75px">
+        <input type="number" placeholder="إيرادات" id="t-rev-${rep}" value="${t.revenue||''}" min="0" style="width:100px">
+        <input type="number" placeholder="زيارات" id="t-visits-${rep}" value="${t.visits||''}" min="0" style="width:75px">
+        <button class="btn-sm" onclick="saveTarget('${rep}')">حفظ</button>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function saveTarget(rep) {
+  const mk = getMonthKey();
+  if (!targets[mk]) targets[mk] = {};
+  targets[mk][rep] = {
+    deals:   parseInt(document.getElementById(`t-deals-${rep}`).value) || 0,
+    revenue: parseInt(document.getElementById(`t-rev-${rep}`).value)   || 0,
+    visits:  parseInt(document.getElementById(`t-visits-${rep}`).value) || 0,
+  };
+  saveTargets(targets);
+  const t = targets[mk][rep];
+  syncTarget(mk, rep, t.deals, t.revenue, t.visits);
+  renderAll();
+  showToast(`✅ تم حفظ أهداف ${rep}`);
+}
+
+function showToast(m) {
+  const t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
