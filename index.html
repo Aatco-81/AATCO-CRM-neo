@@ -189,10 +189,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
     <div class="fg">
       <label>اسم المندوب</label>
       <select id="lu">
-        <option value="">— اختر اسمك —</option>
-        <option>أحمد السعيد</option><option>محمد العمري</option>
-        <option>خالد الزهراني</option><option>سارة المالكي</option>
-        <option value="مدير النظام">مدير النظام</option>
+        <option value="">جاري تحميل المستخدمين...</option>
       </select>
     </div>
     <div class="fg">
@@ -201,7 +198,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
     </div>
     <button class="btn-primary" onclick="doLogin()">دخول</button>
     <div class="login-err" id="lerr">اسم المستخدم أو كلمة المرور غير صحيحة</div>
-    <div style="margin-top:14px;font-size:11px;color:#aaa;text-align:center">المندوبين: 1234 &nbsp;|&nbsp; مدير النظام: admin &nbsp;|&nbsp; <span style="color:#1a4a8a;cursor:pointer" onclick="loadUsersFromSheets()">🔄 تحديث من Sheets</span></div>
+    <div style="margin-top:14px;font-size:11px;color:#aaa;text-align:center">
+      <span id="load-status">🔄 جاري تحميل المستخدمين من Sheets...</span>
+      &nbsp;|&nbsp;
+      <span style="color:#1a4a8a;cursor:pointer;text-decoration:underline" onclick="forceLoadUsers()">إعادة تحميل</span>
+    </div>
   </div>
 </div>
 
