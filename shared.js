@@ -211,13 +211,15 @@ function addActivityAndSync(cardId, cardName, action, user, notes) {
 // ── Auth guard ───────────────────────────────────────────────
 function requireAuth(allowedRoles) {
   const session = getSession();
-  if (!session) {
-    window.location.href = 'index.html';
-    return null;
+  if (!session) { window.location.href = 'index.html'; return null; }
+  // check expiry (8 hours)
+  const ts = session.ts || session.time || 0;
+  if (Date.now() - ts > 8*60*60*1000) {
+    localStorage.removeItem('aatco_session');
+    window.location.href = 'index.html'; return null;
   }
   if (allowedRoles && !allowedRoles.includes(session.role)) {
-    window.location.href = 'index.html';
-    return null;
+    window.location.href = 'index.html'; return null;
   }
   return session;
 }

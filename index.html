@@ -497,21 +497,35 @@ function doLogin(){
   if(usr.status&&usr.status!=='نشط ✅'){showErr('هذا الحساب موقوف — تواصل مع المدير');return;}
   if(usr.pass!==p){showErr('كلمة المرور غير صحيحة');return;}
   curUser=u; curRole=usr.role||'مندوب';
+  // حفظ الجلسة في localStorage
+  localStorage.setItem('aatco_session',JSON.stringify({user:u,role:curRole,ts:Date.now()}));
+  startApp();
+}
+function startApp(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='flex';
-  document.getElementById('uname').textContent=u+' | '+curRole;
-  document.getElementById('uav').textContent=u[0];
-  // Role-based access
-  if(curRole==='مدير'||curRole==='مشرف'){
+  document.getElementById('uname').textContent=curUser+' | '+curRole;
+  document.getElementById('uav').textContent=curUser[0];
+  if(curRole==='مدير'||curRole==='مشرف')
     document.getElementById('stats-btn').style.display='inline-block';
-  }
   populateReps();
-  if(curRole==='مندوب'){document.getElementById('rep-filter').value=u;filterRep(u);}
+  if(curRole==='مندوب'){document.getElementById('rep-filter').value=curUser;filterRep(curUser);}
   if(sheetsUrl) document.getElementById('surl').value=sheetsUrl;
   renderAll();
 }
-function showErr(m){const e=document.getElementById('lerr');e.style.display='block';e.textContent=m;}
-function doLogout(){curUser='';curRole='';document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('lp').value='';document.getElementById('lerr').style.display='none';}
+function doLogout(){
+  curUser='';curRole='';
+  localStorage.removeItem('aatco_session');
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('lp').value='';
+  document.getElementById('lerr').style.display='none';
+}
+function saveSessionBeforeNav(){
+  // تأكد أن الجلسة محفوظة قبل الانتقال
+  if(curUser&&curRole)
+    localStorage.setItem('aatco_session',JSON.stringify({user:curUser,role:curRole,ts:Date.now()}));
+}
 
 // NAV
 function showPage(id,btn){
