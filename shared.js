@@ -49,14 +49,14 @@ function saveUsers(users) {
   localStorage.setItem('aatco_users', JSON.stringify(users));
 }
 function getSession() {
-  const s = sessionStorage.getItem('aatco_session');
+  const s = localStorage.getItem('aatco_session');
   return s ? JSON.parse(s) : null;
 }
 function setSession(user, role) {
-  sessionStorage.setItem('aatco_session', JSON.stringify({ user, role, time: Date.now() }));
+  localStorage.setItem('aatco_session', JSON.stringify({ user, role, time: Date.now() }));
 }
 function clearSession() {
-  sessionStorage.removeItem('aatco_session');
+  localStorage.removeItem('aatco_session');
 }
 
 // ── Activity Log ─────────────────────────────────────────────
