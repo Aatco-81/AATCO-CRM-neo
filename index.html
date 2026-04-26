@@ -831,6 +831,7 @@ async function startApp() {
     document.getElementById('stats-btn').style.display = 'inline-block';
   if (SHEETS_URL) document.getElementById('surl').value = SHEETS_URL;
   populateReps();
+  populateApptFilterRep();
   setLoading('جاري تحميل الفرص من Sheets...');
   await loadCards(false);
   hideLoading();
@@ -1340,8 +1341,11 @@ function showPage(id,btn){
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   btn.classList.add('active');
-  if(id==='report') renderReport();
-  if(id==='stats')  renderStats();
+  if(id==='report')   renderReport();
+  if(id==='stats')    renderStats();
+  if(id==='schedule'){populateApptFilterRep();loadAppts();}
+  if(id==='activity'){populateActRep();loadActivity();}
+  if(id==='targets')  {const now=new Date();document.getElementById('tgt-month').value=now.getMonth();document.getElementById('tgt-year').value=now.getFullYear();loadTargets();}
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1802,22 +1806,6 @@ async function saveTarget(rep){
   else showSync('err','❌ فشل الحفظ');
 }
 
-// ════════════════════════════════════════════════════════════
-// UPDATE showPage to load data for new pages
-// ════════════════════════════════════════════════════════════
-const _origShowPage = showPage;
-function showPage(id,btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  btn.classList.add('active');
-  if(id==='report')   renderReport();
-  if(id==='stats')    renderStats();
-  if(id==='schedule'){loadAppts();}
-  if(id==='activity'){loadActivity();populateActRep();}
-  if(id==='targets')  {loadTargets(); const now=new Date(); document.getElementById('tgt-month').value=now.getMonth(); document.getElementById('tgt-year').value=now.getFullYear();}
-}
-
 function populateActRep(){
   const sel=document.getElementById('act-filter-rep');
   while(sel.options.length>1)sel.remove(1);
@@ -1830,13 +1818,6 @@ function populateApptFilterRep(){
   while(sel.options.length>1)sel.remove(1);
   Object.keys(USERS).filter(n=>USERS[n].role!=='مدير').forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);});
   if(curRole==='مندوب'){sel.value=curUser;sel.disabled=true;}
-}
-
-// Also update startApp to populate appt filter rep
-const _origStartApp = startApp;
-async function startApp(){
-  await _origStartApp();
-  populateApptFilterRep();
 }
 
 </script>
