@@ -1313,6 +1313,26 @@ function renderStats(){
           </div>
         </div>
       </div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px">📊 تفصيل الفرص حسب نوع الخدمة</div>
+        <table style="width:100%;border-collapse:collapse;font-size:11px">
+          <tr style="background:var(--primary-light)">
+            <td style="padding:5px 7px;font-weight:700;color:var(--primary)">الخدمة</td>
+            <td style="padding:5px 7px;text-align:center;font-weight:700;color:var(--p2)">نشطة</td>
+            <td style="padding:5px 7px;text-align:center;font-weight:700;color:var(--won)">مغلقة</td>
+            <td style="padding:5px 7px;text-align:center;color:var(--text-muted)">خسرنا</td>
+          </tr>
+          ${[{k:'تركيب مصعد جديد',l:'🔵 تركيب'},{k:'صيانة مصاعد',l:'🟢 صيانة'},{k:'تجديد مصعد',l:'🟣 تجديد'}].map((sv,si)=>{
+            const sc=rc.filter(x=>x.service===sv.k);
+            if(!sc.length)return '';
+            const na=sc.filter(x=>x.col!=='done'&&x.col!=='lost').length;
+            const nd=sc.filter(x=>x.col==='done').length;
+            const nl=sc.filter(x=>x.col==='lost').length;
+            const bg=si%2?'var(--bg)':'white';
+            return `<tr style="border-top:1px solid var(--border);background:${bg}"><td style="padding:5px 7px">${sv.l}</td><td style="padding:5px 7px;text-align:center;font-weight:700;color:var(--p2)">${na||'—'}</td><td style="padding:5px 7px;text-align:center;font-weight:700;color:var(--won)">${nd||'—'}</td><td style="padding:5px 7px;text-align:center;color:var(--text-muted)">${nl||'—'}</td></tr>`;
+          }).join('')}
+        </table>
+      </div>
     </div>`;
   }).join('');
 }
