@@ -564,6 +564,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
         <div class="fg" style="margin-bottom:0"><label>عدد الأدوار</label><input id="ffl" type="number" placeholder="8" min="1"></div>
         <div class="fg" style="margin-bottom:0"><label>عدد المصاعد 🛗</label><input id="felev" type="number" placeholder="2" min="1"></div>
       </div>
+      <div class="fg" style="margin-top:12px">
+        <label>📍 رابط الموقع (Google Maps)</label>
+        <input id="floc" placeholder="https://maps.google.com/..." style="direction:ltr">
+      </div>
       <div class="fr" style="margin-top:12px">
         <div class="fg" style="margin-bottom:0"><label>القيمة المتوقعة (SR)</label><input id="fval" type="number" placeholder="50000"></div>
         <div class="fg" style="margin-bottom:0"><label>نوع الخدمة</label>
@@ -875,6 +879,7 @@ async function loadCards(showMsg) {
       notes:     row['الملاحظات']         || '',
       rep:       row['المندوب']           || '',
       value:     row['القيمة (SR)']       || '0',
+      location:  row['location']           || '',
       timestamp: row['timestamp']         || '',
     }));
     renderAll();
@@ -934,7 +939,7 @@ function appendCard(c) {
     </div>
     ${c.cname?`<div class="ci">👤 ${c.cname}${c.ctitle?' — '+c.ctitle:''}</div>`:''}
     <div class="ci">📍 ${c.region}${c.address?' | '+c.address:''}</div>
-    <div class="ci">🏢 ${c.btype} | ${c.floors} أدوار${c.elevators?' | 🛗 '+c.elevators+' مصعد':''} | 📞 ${c.phone}</div>
+    <div class="ci">🏢 ${c.btype} | ${c.floors} أدوار${c.elevators?' | 🛗 '+c.elevators+' مصعد':''} | 📞 ${c.phone}${c.location?' | <a href="'+c.location+'" target="_blank" style="color:var(--p1);text-decoration:none">📍 خريطة</a>':''}</div>
     ${c.action?`<div class="ci">⚡ ${c.action}</div>`:''}
     ${c.notes?`<div class="cr ${rc}">${c.notes}</div>`:''}
     <div class="cf">
@@ -958,7 +963,7 @@ function updateKPIs() {
   const active = mine.filter(c=>c.col!=='lost');
   const won    = mine.filter(c=>c.col==='done');
   const lost   = mine.filter(c=>c.col==='lost').length;
-  const tv     = active.reduce((s,c)=>s+(parseFloat(c.value)||0),0);
+  const tv     = active.reduce((s,c)=>s+(parseFloat(String(c.value).replace(/,/g,''))||0),0);
   document.getElementById('k-total').textContent = active.length;
   document.getElementById('k-p1').textContent    = active.filter(c=>c.priority==='p1').length;
   document.getElementById('k-val').textContent   = 'SR '+tv.toLocaleString();
@@ -1044,7 +1049,7 @@ function getAfter(container,y){
 function openNew() {
   document.getElementById('eid').value='';
   document.getElementById('mtitle').textContent='إضافة فرصة جديدة';
-  ['fn','fph','fcname','fctitle','faddr','ffl','felev','fval','fnotes'].forEach(id=>document.getElementById(id).value='');
+  ['fn','fph','fcname','fctitle','faddr','ffl','felev','fval','fnotes','floc'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('freg').value='جدة';
   document.getElementById('fbt').value='سكني';
   document.getElementById('fsvc').value='تركيب مصعد جديد';
@@ -1111,6 +1116,7 @@ async function saveCard(){
     priority:document.getElementById('fpri').value||'p2',
     action:  selAct, result:selRes,
     notes:   document.getElementById('fnotes').value.trim(),
+    location:document.getElementById('floc').value.trim()||'',
     rep:     document.getElementById('frep').value,
     col:     eid?(cards.find(c=>c.id==eid)||{col:'new'}).col:'new',
     timestamp: ts,
@@ -1136,7 +1142,8 @@ function buildCardRow(c){
     col:c.col, priority:c.priority,
     action:c.action||'', result:c.result||'',
     notes:c.notes||'', rep:c.rep||'',
-    value:c.value||0, timestamp:c.timestamp||new Date().toISOString()
+    value:c.value||0, location:c.location||'',
+    timestamp:c.timestamp||new Date().toISOString()
   };
 }
 
@@ -1154,6 +1161,7 @@ function openView(id){
         ${vr('الاسم',c.name)}${vr('الهاتف',c.phone||'—')}
         ${vr('الشخص المسؤول',c.cname||'—')}${vr('المسمى الوظيفي',c.ctitle||'—')}
         ${vr('المدينة',c.region)}${vr('العنوان',c.address||'—')}
+        ${vr('الموقع', c.location ? '<a href="' + c.location + '" target="_blank" style="color:var(--primary);font-weight:600">📍 فتح الخريطة</a>' : '—')}
         ${vr('نوع المبنى',c.btype)}${vr('الأدوار',c.floors||'—')}${vr('عدد المصاعد',c.elevators||'—')}
         ${vr('الخدمة',c.service)}
         ${vr('القيمة',c.value&&c.value!='0'?'SR '+Number(c.value).toLocaleString():'—')}
@@ -1194,6 +1202,7 @@ function editCard(id){
   document.getElementById('fval').value=c.value||'';
   document.getElementById('fsvc').value=c.service;
   document.getElementById('fnotes').value=c.notes||'';
+  document.getElementById('floc').value=c.location||'';
   initP(c.priority);
   selAct=c.action||'';selRes=c.result||'';
   document.querySelectorAll('.chip').forEach(ch=>ch.classList.toggle('sel',ch.textContent.trim()===c.action));
@@ -1265,9 +1274,10 @@ function renderReport(){
 // STATS
 // ════════════════════════════════════════════════════════════
 function renderStats(){
-  const active=cards.filter(c=>c.col!=='lost');
-  const won=cards.filter(c=>c.col==='done');
-  const tv=active.reduce((s,c)=>s+(parseFloat(c.value)||0),0);
+  const mine=curRole==='مندوب'?cards.filter(c=>c.rep===curUser):cards;
+  const active=mine.filter(c=>c.col!=='lost');
+  const won=mine.filter(c=>c.col==='done');
+  const tv=active.reduce((s,c)=>s+(parseFloat(String(c.value).replace(/,/g,''))||0),0);
   document.getElementById('sgrid').innerHTML=`
     <div class="sc"><div class="sc-label">إجمالي الفرص</div><div class="sc-val">${active.length}</div></div>
     <div class="sc"><div class="sc-label">القيمة الإجمالية</div><div class="sc-val" style="font-size:18px">SR ${tv.toLocaleString()}</div></div>
@@ -1275,11 +1285,12 @@ function renderStats(){
     <div class="sc"><div class="sc-label">🔴 P1 عاجلة</div><div class="sc-val" style="color:var(--p1)">${active.filter(c=>c.priority==='p1').length}</div></div>`;
   const colors={p1:'var(--p1)',p2:'var(--p2)',p3:'var(--p3)',p4:'var(--p4)'};
   document.getElementById('pbchart').innerHTML=['p1','p2','p3','p4'].map(p=>{
-    const n=active.filter(c=>c.priority===p).length;
+    const n=mine.filter(c=>c.col!=='lost'&&c.priority===p).length;
     const pct=active.length?Math.round((n/active.length)*100):0;
     return`<div class="pb-row"><div class="pb-lbl" style="color:${colors[p]}">${p.toUpperCase()}</div><div class="pb-bw"><div class="pb-b" style="width:${pct}%;background:${colors[p]}"></div></div><div class="pb-n" style="color:${colors[p]}">${n}</div></div>`;
   }).join('');
-  const reps=Object.keys(USERS).filter(n=>USERS[n].role!=='مدير');
+  const allReps=Object.keys(USERS).filter(n=>USERS[n].role!=='مدير');
+  const reps=curRole==='مندوب'?allReps.filter(r=>r===curUser):allReps;
   document.getElementById('repgrid').innerHTML=reps.map(r=>{
     const rc=cards.filter(c=>c.rep===r);
     const rw=rc.filter(c=>c.col==='done');
