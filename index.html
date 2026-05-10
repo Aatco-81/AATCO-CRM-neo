@@ -904,7 +904,7 @@ function resultKey(ar) {
 function renderAll() {
   Object.keys(COLS).forEach(c => document.getElementById('cards-'+c).innerHTML='');
   cards.forEach(c => {
-    if (curRole === 'مندوب' && c.rep !== curUser) return;
+    if (curRole === 'مندوب' && c.rep.trim().toLowerCase() !== curUser.trim().toLowerCase()) return;
     appendCard(c);
   });
   updateKPIs();
@@ -959,7 +959,7 @@ function updateCounts() {
 }
 
 function updateKPIs() {
-  const mine   = curRole==='مندوب' ? cards.filter(c=>c.rep===curUser) : cards;
+  const mine   = curRole==='مندوب' ? cards.filter(c=>c.rep.trim().toLowerCase()===curUser.trim().toLowerCase()) : cards;
   const active = mine.filter(c=>c.col!=='lost');
   const won    = mine.filter(c=>c.col==='done');
   const lost   = mine.filter(c=>c.col==='lost').length;
@@ -1240,7 +1240,7 @@ async function moveCard(id,col){
 function filterName(q){document.querySelectorAll('.card').forEach(el=>el.style.display=el.querySelector('.card-name').textContent.includes(q)?'':'none');}
 function filterP(p){document.querySelectorAll('.card').forEach(el=>el.style.display=(!p||el.classList.contains(p))?'':'none');}
 function filterSvc(s){document.querySelectorAll('.card').forEach(el=>{const c=cards.find(x=>x.id==el.dataset.id);el.style.display=(!c||!s||c.service===s)?'':'none';});}
-function filterRep(r){document.querySelectorAll('.card').forEach(el=>{const c=cards.find(x=>x.id==el.dataset.id);el.style.display=(!c||!r||c.rep===r)?'':'none';});}
+function filterRep(r){document.querySelectorAll('.card').forEach(el=>{const c=cards.find(x=>x.id==el.dataset.id);el.style.display=(!c||!r||c.rep.trim().toLowerCase()===r.trim().toLowerCase())?'':'none';});}
 
 function populateReps(){
   const reps=Object.keys(USERS).filter(n=>USERS[n].role!=='مدير');
@@ -1274,7 +1274,7 @@ function renderReport(){
 // STATS
 // ════════════════════════════════════════════════════════════
 function renderStats(){
-  const mine=curRole==='مندوب'?cards.filter(c=>c.rep===curUser):cards;
+  const mine=curRole==='مندوب'?cards.filter(c=>c.rep.trim().toLowerCase()===curUser.trim().toLowerCase()):cards;
   const active=mine.filter(c=>c.col!=='lost');
   const won=mine.filter(c=>c.col==='done');
   const tv=active.reduce((s,c)=>s+(parseFloat(String(c.value).replace(/,/g,''))||0),0);
@@ -1290,9 +1290,9 @@ function renderStats(){
     return`<div class="pb-row"><div class="pb-lbl" style="color:${colors[p]}">${p.toUpperCase()}</div><div class="pb-bw"><div class="pb-b" style="width:${pct}%;background:${colors[p]}"></div></div><div class="pb-n" style="color:${colors[p]}">${n}</div></div>`;
   }).join('');
   const allReps=Object.keys(USERS).filter(n=>USERS[n].role!=='مدير');
-  const reps=curRole==='مندوب'?allReps.filter(r=>r===curUser):allReps;
+  const reps=curRole==='مندوب'?allReps.filter(r=>r.trim().toLowerCase()===curUser.trim().toLowerCase()):allReps;
   document.getElementById('repgrid').innerHTML=reps.map(r=>{
-    const rc=cards.filter(c=>c.rep===r);
+    const rc=cards.filter(c=>c.rep.trim().toLowerCase()===r.trim().toLowerCase());
     const rw=rc.filter(c=>c.col==='done');
     const rv=rc.reduce((s,c)=>s+(parseFloat(c.value)||0),0);
     // Count elevators per service type
