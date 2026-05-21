@@ -9,6 +9,9 @@
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
   window._firebase = { initializeApp, getFirestore, collection, doc, setDoc, deleteDoc, getDocs, onSnapshot, query, orderBy };
+  // Signal that Firebase is ready
+  window._firebaseReady = true;
+  window.dispatchEvent(new Event('firebaseReady'));
 </script>
 <style>
 :root{
@@ -699,17 +702,14 @@ let db = null; // Firestore instance
 // ════════════════════════════════════════════════════════════
 // INIT — runs on page load
 // ════════════════════════════════════════════════════════════
-window.addEventListener('load', async function() {
+async function initApp() {
   setLoading('جاري تحميل المستخدمين...');
 
-  // 1. Load users from Sheets
+  // 1. Load users from Firebase
   const usersOk = await loadUsers();
   if (!usersOk) {
-    setLoading('❌ تعذّر تحميل المستخدمين. تحقق من رابط Sheets.');
-    setTimeout(() => {
-      hideLoading();
-      showLogin();
-    }, 2000);
+    setLoading('❌ تعذّر تحميل المستخدمين من Firebase.');
+    setTimeout(() => { hideLoading(); showLogin(); }, 2000);
     return;
   }
 
@@ -724,7 +724,18 @@ window.addEventListener('load', async function() {
     hideLoading();
     showLogin();
   }
-});
+}
+
+window.addEventListener('load', function() {
+  // Wait for Firebase SDK to load
+  if (window._firebaseReady) {
+    initApp();
+  } else {
+    window.addEventListener('firebaseReady', initApp);
+    // Fallback timeout
+    setTimeout(() => { if (!window._firebaseReady) initApp(); }, 3000);
+  }
+}););
 
 // ════════════════════════════════════════════════════════════
 // LOADING
