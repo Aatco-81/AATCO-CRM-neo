@@ -5,13 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AATCO Elevators — CRM</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-<script type="module">
-  import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-  window._firebase = { initializeApp, getFirestore, getApps, getApp, collection, doc, setDoc, deleteDoc, getDocs, onSnapshot, query, orderBy };
-  // Signal that Firebase is ready
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyC4PHLRpdRAuN__QBNz_DlKibuIQdlDa6s",
+    authDomain: "aatco-crm-neo.firebaseapp.com",
+    projectId: "aatco-crm-neo",
+    storageBucket: "aatco-crm-neo.firebasestorage.app",
+    messagingSenderId: "554562183081",
+    appId: "1:554562183081:web:e26486e2c102805dc9aeb8"
+  });
+  window._db = firebase.firestore();
   window._firebaseReady = true;
-  window.dispatchEvent(new Event('firebaseReady'));
 </script>
 <style>
 :root{
@@ -686,18 +693,7 @@ let selRes   = '';
 let selAct   = '';
 let dragCard = null;
 let placeholder = null;
-// ── Firebase Config ──────────────────────────────────────────
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyC4PHLRpdRAuN__QBNz_DlKibuIQdlDa6s",
-  authDomain: "aatco-crm-neo.firebaseapp.com",
-  databaseURL: "https://aatco-crm-neo-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "aatco-crm-neo",
-  storageBucket: "aatco-crm-neo.firebasestorage.app",
-  messagingSenderId: "554562183081",
-  appId: "1:554562183081:web:e26486e2c102805dc9aeb8"
-};
 let SHEETS_URL = ''; // kept for config page compatibility
-let db = null; // Firestore instance
 
 // ════════════════════════════════════════════════════════════
 // INIT — runs on page load
@@ -727,14 +723,7 @@ async function initApp() {
 }
 
 window.addEventListener('load', function() {
-  // Wait for Firebase SDK to load
-  if (window._firebaseReady) {
-    initApp();
-  } else {
-    window.addEventListener('firebaseReady', initApp);
-    // Fallback timeout
-    setTimeout(() => { if (!window._firebaseReady) initApp(); }, 3000);
-  }
+  initApp();
 });
 
 // ════════════════════════════════════════════════════════════
@@ -775,42 +764,30 @@ function clearSession() {
 // SHEETS API
 // ════════════════════════════════════════════════════════════
 // ── Firebase API ─────────────────────────────────────────────
-async function initFirebase() {
-  if (db) return db;
-  const { initializeApp, getFirestore, getApps, getApp } = window._firebase;
-  const app = getApps().length ? getApp() : initializeApp(FIREBASE_CONFIG);
-  db = getFirestore(app);
-  return db;
-}
+// ── Firebase Compat API ──────────────────────────────────────
+function getDB() { return window._db; }
 
 async function fbGet(colName) {
   try {
-    const firestore = await initFirebase();
-    const { collection, getDocs } = window._firebase;
-    const snap = await getDocs(collection(firestore, colName));
+    const snap = await getDB().collection(colName).get();
     return snap.docs.map(d => ({id: d.id, ...d.data()}));
-  } catch(e) { console.log('Firebase GET error:', e); return null; }
+  } catch(e) { console.log('fbGet error:', e); return null; }
 }
 
 async function fbSet(colName, docId, data) {
   try {
-    const firestore = await initFirebase();
-    const { doc, setDoc } = window._firebase;
-    await setDoc(doc(firestore, colName, String(docId)), data, {merge: true});
+    await getDB().collection(colName).doc(String(docId)).set(data, {merge: true});
     return true;
-  } catch(e) { console.log('Firebase SET error:', e); return false; }
+  } catch(e) { console.log('fbSet error:', e); return false; }
 }
 
 async function fbDelete(colName, docId) {
   try {
-    const firestore = await initFirebase();
-    const { doc, deleteDoc } = window._firebase;
-    await deleteDoc(doc(firestore, colName, String(docId)));
+    await getDB().collection(colName).doc(String(docId)).delete();
     return true;
-  } catch(e) { console.log('Firebase DELETE error:', e); return false; }
+  } catch(e) { console.log('fbDelete error:', e); return false; }
 }
 
-// ── Keep sheetsGet/sheetsPost as stubs ───────────────────────
 async function sheetsGet(params) { return null; }
 async function sheetsPost(body) { return true; }
 
