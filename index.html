@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AATCO Elevators — CRM</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  window._firebase = { initializeApp, getFirestore, collection, doc, setDoc, deleteDoc, getDocs, onSnapshot, query, orderBy };
+</script>
 <style>
 :root{
   --primary:#1a4a8a;--primary-dark:#123570;--primary-light:#e8f0fb;
@@ -449,13 +454,17 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
     <div class="config-page">
       <div class="cb">
         <div style="font-size:16px;font-weight:700;color:var(--primary);margin-bottom:16px">⚙️ إعدادات النظام</div>
-        <div class="fg"><label>رابط Google Sheets (Apps Script)</label>
-          <input type="text" id="surl" placeholder="https://script.google.com/macros/s/.../exec">
+        <div style="padding:16px;background:var(--won-bg);border-radius:8px;border:1px solid #86efac;margin-bottom:16px">
+          <div style="font-size:14px;font-weight:700;color:var(--won);margin-bottom:6px">🔥 متصل بـ Firebase</div>
+          <div style="font-size:12px;color:var(--text-muted)">Project: aatco-crm-neo</div>
+          <div style="font-size:12px;color:var(--text-muted)">Database: Firestore</div>
+          <div style="font-size:12px;color:var(--text-muted)">Region: europe-west1</div>
         </div>
-        <button class="btn-save" onclick="saveConfig()" style="margin-top:0">حفظ الرابط</button>
         <div id="cstatus" class="cs" style="display:none"></div>
         <div style="margin-top:16px;padding:14px;background:var(--bg);border-radius:8px;font-size:12px;color:var(--text-muted);line-height:2">
-          ⚠️ بعد تغيير الرابط أعد تحميل الصفحة لتفعيل التغييرات
+          ✅ البيانات تُحفظ مباشرة في Firebase Firestore<br>
+          ✅ تحديث فوري لجميع المستخدمين<br>
+          ✅ لا حاجة لأي Apps Script أو Google Sheets
         </div>
       </div>
     </div>
@@ -674,7 +683,18 @@ let selRes   = '';
 let selAct   = '';
 let dragCard = null;
 let placeholder = null;
-let SHEETS_URL = localStorage.getItem('aatco_sheets') || 'https://script.google.com/macros/s/AKfycbxLPTyFG8oblLd1hMr8bYFgMXs5HI24c9yholBmaTgKsmRfbLDPWx-V3-enewtB3wpk/exec';
+// ── Firebase Config ──────────────────────────────────────────
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC4PHLRpdRAuN__QBNz_DlKibuIQdlDa6s",
+  authDomain: "aatco-crm-neo.firebaseapp.com",
+  databaseURL: "https://aatco-crm-neo-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "aatco-crm-neo",
+  storageBucket: "aatco-crm-neo.firebasestorage.app",
+  messagingSenderId: "554562183081",
+  appId: "1:554562183081:web:e26486e2c102805dc9aeb8"
+};
+let SHEETS_URL = ''; // kept for config page compatibility
+let db = null; // Firestore instance
 
 // ════════════════════════════════════════════════════════════
 // INIT — runs on page load
@@ -743,36 +763,54 @@ function clearSession() {
 // ════════════════════════════════════════════════════════════
 // SHEETS API
 // ════════════════════════════════════════════════════════════
-async function sheetsGet(params) {
-  if (!SHEETS_URL) return null;
-  try {
-    const url = SHEETS_URL + '?' + new URLSearchParams({...params, t: Date.now()});
-    const res  = await fetch(url);
-    return await res.json();
-  } catch(e) { console.log('GET error:', e); return null; }
+// ── Firebase API ─────────────────────────────────────────────
+async function initFirebase() {
+  if (db) return db;
+  const { initializeApp, getFirestore } = window._firebase;
+  const app = initializeApp(FIREBASE_CONFIG);
+  db = getFirestore(app);
+  return db;
 }
 
-async function sheetsPost(body) {
-  if (!SHEETS_URL) return null;
+async function fbGet(colName) {
   try {
-    await fetch(SHEETS_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(body)
-    });
-    return true;
-  } catch(e) { console.log('POST error:', e); return false; }
+    const firestore = await initFirebase();
+    const { collection, getDocs } = window._firebase;
+    const snap = await getDocs(collection(firestore, colName));
+    return snap.docs.map(d => ({id: d.id, ...d.data()}));
+  } catch(e) { console.log('Firebase GET error:', e); return null; }
 }
+
+async function fbSet(colName, docId, data) {
+  try {
+    const firestore = await initFirebase();
+    const { doc, setDoc } = window._firebase;
+    await setDoc(doc(firestore, colName, String(docId)), data, {merge: true});
+    return true;
+  } catch(e) { console.log('Firebase SET error:', e); return false; }
+}
+
+async function fbDelete(colName, docId) {
+  try {
+    const firestore = await initFirebase();
+    const { doc, deleteDoc } = window._firebase;
+    await deleteDoc(doc(firestore, colName, String(docId)));
+    return true;
+  } catch(e) { console.log('Firebase DELETE error:', e); return false; }
+}
+
+// ── Keep sheetsGet/sheetsPost as stubs ───────────────────────
+async function sheetsGet(params) { return null; }
+async function sheetsPost(body) { return true; }
 
 // ════════════════════════════════════════════════════════════
 // USERS
 // ════════════════════════════════════════════════════════════
 async function loadUsers() {
-  const data = await sheetsGet({action:'getUsers'});
-  if (!data || !data.users || data.users.length === 0) return false;
+  const data = await fbGet('users');
+  if (!data || data.length === 0) return false;
   USERS = {};
-  data.users.forEach(u => {
+  data.forEach(u => {
     if (u.name && u.password && u.status === 'نشط ✅') {
       USERS[u.name] = {pass: String(u.password), role: u.role||'مندوب', region: u.region||'الكل'};
     }
@@ -856,36 +894,61 @@ async function startApp() {
 // ════════════════════════════════════════════════════════════
 // CARDS — Read from Sheets
 // ════════════════════════════════════════════════════════════
+let _cardsUnsubscribe = null;
+
+function mapCard(row) {
+  return {
+    id:        row.id        || '',
+    name:      row.name      || '',
+    phone:     row.phone     || '',
+    cname:     row.cname     || '',
+    ctitle:    row.ctitle    || '',
+    region:    row.region    || '',
+    address:   row.address   || '',
+    btype:     row.btype     || '',
+    floors:    row.floors    || '',
+    elevators: row.elevators || '',
+    service:   row.service   || '',
+    col:       row.col       || 'new',
+    priority:  (row.priority || 'p2').toLowerCase(),
+    action:    row.action    || '',
+    result:    row.result    || '',
+    notes:     row.notes     || '',
+    rep:       row.rep       || '',
+    value:     row.value     || '0',
+    location:  row.location  || '',
+    timestamp: row.timestamp || '',
+  };
+}
+
 async function loadCards(showMsg) {
-  if (showMsg) showSync('syncing', '🔄 جاري تحميل الفرص...');
-  const data = await sheetsGet({action:'getCards'});
-  if (data && data.data) {
-    cards = data.data.map(row => ({
-      id:        row['رقم الفرصة']       || '',
-      name:      row['اسم العميل']        || '',
-      phone:     row['رقم الهاتف']        || '',
-      cname:     row['الشخص المسؤول']     || '',
-      ctitle:    row['المسمى الوظيفي']    || '',
-      region:    row['المدينة']           || '',
-      address:   row['عنوان المبنى']      || '',
-      btype:     row['نوع المبنى']        || '',
-      floors:    row['عدد الأدوار']       || '',
-      elevators: row['عدد المصاعد']       || '',
-      service:   row['نوع الخدمة']        || '',
-      col:       colKey(row['المرحلة'])   || 'new',
-      priority:  (row['الأولوية']||'P2').toLowerCase(),
-      action:    row['إجراء المندوب']     || '',
-      result:    resultKey(row['نتيجة الزيارة']) || '',
-      notes:     row['الملاحظات']         || '',
-      rep:       row['المندوب']           || '',
-      value:     row['القيمة (SR)']       || '0',
-      location:  row['location']           || '',
-      timestamp: row['timestamp']         || '',
-    }));
-    renderAll();
-    if (showMsg) showSync('ok', '✅ تم التحديث');
-  } else {
-    if (showMsg) showSync('err', '❌ تعذّر التحديث');
+  if (showMsg) showSync('syncing', '🔄 جاري الاتصال...');
+  try {
+    const firestore = await initFirebase();
+    const { collection, onSnapshot } = window._firebase;
+
+    // Unsubscribe from previous listener
+    if (_cardsUnsubscribe) _cardsUnsubscribe();
+
+    // Real-time listener
+    _cardsUnsubscribe = onSnapshot(
+      collection(firestore, 'cards'),
+      (snapshot) => {
+        cards = snapshot.docs.map(d => mapCard({id: d.id, ...d.data()}));
+        renderAll();
+        if (showMsg) {
+          showSync('ok', '✅ متصل — يتحدث تلقائياً');
+          showMsg = false; // show only once
+        }
+      },
+      (error) => {
+        console.log('Snapshot error:', error);
+        showSync('err', '❌ انقطع الاتصال');
+      }
+    );
+  } catch(e) {
+    console.log('loadCards error:', e);
+    if (showMsg) showSync('err', '❌ تعذّر الاتصال بـ Firebase');
   }
 }
 
@@ -1030,7 +1093,7 @@ async function dDrop(e, colId) {
   if(old!==colId){
     card.col=colId;
     showSync('syncing','🔄 جاري الحفظ...');
-    const ok=await sheetsPost({type:'card',action:'update',card:buildCardRow(card)});
+    const ok=await fbSet('cards', card.id, card);
     showSync(ok?'ok':'err', ok?`✅ تم نقل "${card.name}" إلى ${COLS[colId]}`:'❌ فشل الحفظ');
   }
   updateCounts(); updateKPIs();
@@ -1121,15 +1184,16 @@ async function saveCard(){
     col:     eid?(cards.find(c=>c.id==eid)||{col:'new'}).col:'new',
     timestamp: ts,
   };
-  const ok=await sheetsPost({type:'card',action:eid?'update':'add',card:buildCardRow(d)});
+  // Firebase save handled below
   btn.disabled=false; btn.textContent='💾 حفظ الفرصة';
+  const ok = await fbSet('cards', d.id, d);
   if(ok){
     if(eid){const i=cards.findIndex(c=>c.id==eid);if(i>=0)cards[i]=d;else cards.push(d);}
     else cards.push(d);
     renderAll(); closeM();
     showSync('ok',eid?`✅ تم تعديل "${name}"`:`✅ تمت إضافة "${name}"`);
   } else {
-    showSync('err','❌ فشل الحفظ في Sheets');
+    showSync('err','❌ فشل الحفظ في Firebase');
   }
 }
 function buildCardRow(c){
@@ -1220,7 +1284,7 @@ async function delCard(id){
   if(!confirm('هل أنت متأكد من حذف هذه الفرصة؟'))return;
   const c=cards.find(x=>x.id==id);
   showSync('syncing','🔄 جاري الحذف...');
-  const ok=await sheetsPost({type:'card',action:'delete',card:{id}});
+  const ok=await fbDelete('cards', id);
   if(ok){cards=cards.filter(x=>x.id!=id);renderAll();closeV();showSync('ok','✅ تم الحذف');}
   else showSync('err','❌ فشل الحذف');
 }
@@ -1229,7 +1293,7 @@ async function moveCard(id,col){
   const c=cards.find(x=>x.id==id);
   c.col=col;
   showSync('syncing','🔄 جاري الحفظ...');
-  const ok=await sheetsPost({type:'card',action:'update',card:buildCardRow(c)});
+  const ok=await fbSet('cards', c.id, c);
   renderAll();
   showSync(ok?'ok':'err', ok?`✅ تم النقل إلى ${COLS[col]}`:'❌ فشل الحفظ');
 }
@@ -1352,11 +1416,9 @@ function renderStats(){
 // CONFIG
 // ════════════════════════════════════════════════════════════
 function saveConfig(){
-  SHEETS_URL=document.getElementById('surl').value.trim();
-  localStorage.setItem('aatco_sheets',SHEETS_URL);
   const s=document.getElementById('cstatus');
   s.style.display='block';s.className='cs ok';
-  s.textContent='✅ تم حفظ الرابط — أعد تحميل الصفحة لتفعيله';
+  s.textContent='✅ النظام متصل بـ Firebase مباشرة — لا حاجة لأي رابط خارجي';
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1405,20 +1467,20 @@ let appointments = [];
 let calDate = new Date();
 let apptEditId = null;
 
-async function loadAppts() {
-  const data = await sheetsGet({action:'getAppointments'});
-  if (data && data.data) {
-    appointments = data.data.map(r => ({
-      id:         r['رقم الموعد']   || '',
-      cardId:     r['رقم الفرصة']   || '',
-      clientName: r['العميل']        || '',
-      date:       r['التاريخ']       || '',
-      time:       r['الوقت']         || '',
-      type:       r['نوع الموعد']    || '',
-      rep:        r['المندوب']       || '',
-      notes:      r['الملاحظات']     || '',
-      status:     apptStatusKey(r['الحالة']) || 'upcoming',
-      createdAt:  r['timestamp']     || '',
+async function loadAppts(){
+  const data=await fbGet('appointments');
+  if(data){
+    appointments=data.map(r=>({
+      id:         r.id         ||'',
+      cardId:     r.cardId     ||'',
+      clientName: r.clientName ||'',
+      date:       r.date       ||'',
+      time:       r.time       ||'',
+      type:       r.type       ||'',
+      rep:        r.rep        ||'',
+      notes:      r.notes      ||'',
+      status:     r.status     ||'upcoming',
+      createdAt:  r.createdAt  ||'',
     }));
   }
   renderAppts();
@@ -1578,7 +1640,7 @@ async function saveAppt(){
     createdAt:apptEditId?(appointments.find(a=>a.id===apptEditId)||{}).createdAt||new Date().toISOString():new Date().toISOString(),
   };
   showSync('syncing','🔄 جاري الحفظ...');
-  const ok=await sheetsPost({type:'appointment',action:apptEditId?'update':'add',appointment:buildApptRow(appt)});
+  const ok=await fbSet('appointments', appt.id, appt);
   if(ok){
     if(apptEditId){const i=appointments.findIndex(a=>a.id===apptEditId);if(i>=0)appointments[i]=appt;else appointments.push(appt);}
     else appointments.push(appt);
@@ -1593,7 +1655,7 @@ async function markApptDone(id){
   const a=appointments.find(x=>x.id===id);if(!a)return;
   a.status='done';
   showSync('syncing','🔄 جاري الحفظ...');
-  const ok=await sheetsPost({type:'appointment',action:'update',appointment:buildApptRow(a)});
+  const ok=await fbSet('appointments', a.id, a);
   if(ok){logActivity(a.cardId,a.clientName,`إنجاز موعد: ${a.type}`,curUser,'');renderAppts();showSync('ok','✅ تم تحديد الموعد كمنتهي');}
   else showSync('err','❌ فشل الحفظ');
 }
@@ -1602,7 +1664,7 @@ async function deleteAppt(id){
   if(!confirm('حذف هذا الموعد؟'))return;
   const a=appointments.find(x=>x.id===id);
   showSync('syncing','🔄 جاري الحذف...');
-  const ok=await sheetsPost({type:'appointment',action:'delete',appointment:{id}});
+  const ok=await fbDelete('appointments', id);
   if(ok){appointments=appointments.filter(x=>x.id!==id);renderAppts();renderCalendar();showSync('ok','✅ تم الحذف');}
   else showSync('err','❌ فشل الحذف');
 }
@@ -1623,17 +1685,18 @@ function buildApptRow(a){
 let activityLog = [];
 
 async function loadActivity(){
-  const data=await sheetsGet({action:'getActivity'});
-  if(data&&data.data){
-    activityLog=data.data.map(r=>({
-      id:        r['رقم السجل']   ||'',
-      cardId:    r['رقم الفرصة'] ||'',
-      cardName:  r['اسم العميل'] ||'',
-      action:    r['الإجراء']    ||'',
-      user:      r['المندوب']    ||'',
-      notes:     r['الملاحظات'] ||'',
-      timestamp: r['timestamp']  ||'',
+  const data=await fbGet('activity');
+  if(data){
+    activityLog=data.map(r=>({
+      id:        r.id        ||'',
+      cardId:    r.cardId    ||'',
+      cardName:  r.cardName  ||'',
+      action:    r.action    ||'',
+      user:      r.user      ||'',
+      notes:     r.notes     ||'',
+      timestamp: r.timestamp ||'',
     }));
+    activityLog.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
   }
   renderActivity();
   renderActStats();
@@ -1646,11 +1709,7 @@ async function logActivity(cardId,cardName,action,user,notes){
     timestamp:new Date().toISOString()
   };
   activityLog.unshift(entry);
-  await sheetsPost({type:'activity',action:'add',activity:{
-    id:entry.id, cardId:entry.cardId, cardName:entry.cardName,
-    action:entry.action, user:entry.user, notes:entry.notes,
-    timestamp:entry.timestamp
-  }});
+  await fbSet('activity', entry.id, entry);
 }
 
 function renderActStats(){
@@ -1739,17 +1798,17 @@ function exportActivity(){
 let targetsData = {};
 
 async function loadTargets(){
-  const data=await sheetsGet({action:'getTargets'});
-  if(data&&data.data){
+  const data=await fbGet('targets');
+  if(data){
     targetsData={};
-    data.data.forEach(r=>{
-      const mk=r['الشهر']||'';
-      const rep=r['المندوب']||'';
+    data.forEach(r=>{
+      const mk=r.monthKey||'';
+      const rep=r.rep||'';
       if(!targetsData[mk])targetsData[mk]={};
       targetsData[mk][rep]={
-        deals:   parseInt(r['هدف الصفقات'])||0,
-        revenue: parseInt(r['هدف الإيرادات (SR)'])||0,
-        visits:  parseInt(r['هدف الزيارات'])||0,
+        deals:   parseInt(r.deals)||0,
+        revenue: parseInt(r.revenue)||0,
+        visits:  parseInt(r.visits)||0,
       };
     });
   }
@@ -1840,7 +1899,7 @@ async function saveTarget(rep){
   if(!targetsData[mk])targetsData[mk]={};
   targetsData[mk][rep]={deals,revenue,visits};
   showSync('syncing','🔄 جاري الحفظ...');
-  const ok=await sheetsPost({type:'target',action:'upsert',target:{monthKey:mk,rep,deals,revenue,visits}});
+  const ok=await fbSet('targets', mk+'_'+rep, {monthKey:mk,rep,deals,revenue,visits});
   if(ok){renderTargets();showSync('ok',`✅ تم حفظ أهداف ${rep}`);}
   else showSync('err','❌ فشل الحفظ');
 }
