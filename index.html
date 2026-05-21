@@ -6,9 +6,9 @@
 <title>AATCO Elevators — CRM</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-  window._firebase = { initializeApp, getFirestore, collection, doc, setDoc, deleteDoc, getDocs, onSnapshot, query, orderBy };
+  window._firebase = { initializeApp, getFirestore, getApps, getApp, collection, doc, setDoc, deleteDoc, getDocs, onSnapshot, query, orderBy };
   // Signal that Firebase is ready
   window._firebaseReady = true;
   window.dispatchEvent(new Event('firebaseReady'));
@@ -777,16 +777,8 @@ function clearSession() {
 // ── Firebase API ─────────────────────────────────────────────
 async function initFirebase() {
   if (db) return db;
-  const { initializeApp, getFirestore } = window._firebase;
-  // Prevent duplicate app initialization
-  let app;
-  try {
-    app = initializeApp(FIREBASE_CONFIG);
-  } catch(e) {
-    // App already initialized
-    const { getApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    app = getApp();
-  }
+  const { initializeApp, getFirestore, getApps, getApp } = window._firebase;
+  const app = getApps().length ? getApp() : initializeApp(FIREBASE_CONFIG);
   db = getFirestore(app);
   return db;
 }
@@ -913,8 +905,6 @@ async function startApp() {
 // ════════════════════════════════════════════════════════════
 // CARDS — Read from Sheets
 // ════════════════════════════════════════════════════════════
-let _cardsUnsubscribe = null;
-
 function mapCard(row) {
   return {
     id:        row.id        || '',
@@ -941,30 +931,16 @@ function mapCard(row) {
 }
 
 async function loadCards(showMsg) {
-  if (showMsg) showSync('syncing', '🔄 جاري الاتصال...');
+  if (showMsg) showSync('syncing', '🔄 جاري تحميل الفرص...');
   try {
-    const firestore = await initFirebase();
-    const { collection, onSnapshot } = window._firebase;
-
-    // Unsubscribe from previous listener
-    if (_cardsUnsubscribe) _cardsUnsubscribe();
-
-    // Real-time listener
-    _cardsUnsubscribe = onSnapshot(
-      collection(firestore, 'cards'),
-      (snapshot) => {
-        cards = snapshot.docs.map(d => mapCard({id: d.id, ...d.data()}));
-        renderAll();
-        if (showMsg) {
-          showSync('ok', '✅ متصل — يتحدث تلقائياً');
-          showMsg = false; // show only once
-        }
-      },
-      (error) => {
-        console.log('Snapshot error:', error);
-        showSync('err', '❌ انقطع الاتصال');
-      }
-    );
+    const data = await fbGet('cards');
+    if (data !== null) {
+      cards = data.map(row => mapCard(row));
+      renderAll();
+      if (showMsg) showSync('ok', '✅ تم التحديث');
+    } else {
+      if (showMsg) showSync('err', '❌ تعذّر التحديث');
+    }
   } catch(e) {
     console.log('loadCards error:', e);
     if (showMsg) showSync('err', '❌ تعذّر الاتصال بـ Firebase');
