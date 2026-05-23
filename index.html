@@ -1210,11 +1210,11 @@ function openView(id){
     ${c.notes?`<div style="padding:8px 10px;border-radius:6px;font-size:13px;border:0.5px solid var(--border);color:var(--text);margin-bottom:14px">${c.notes}</div>`:''}
     <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:8px">نقل إلى مرحلة:</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
-      ${Object.entries(COLS).filter(([k])=>k!==c.col).map(([k,v])=>`<button class="mv-btn" onclick="moveCard(${c.id},'${k}');closeV()">${v}</button>`).join('')}
+      ${Object.entries(COLS).filter(([k])=>k!==c.col).map(([k,v])=>`<button class="mv-btn" onclick="moveCard('${c.id}','${k}');closeV()">${v}</button>`).join('')}
     </div>
     <div style="display:flex;gap:8px">
-      <button class="btn-save" style="flex:1;margin-top:0" onclick="editCard(${c.id})">✏️ تعديل</button>
-      <button class="btn-save" style="flex:1;margin-top:0;background:#dc2626" onclick="delCard(${c.id})">🗑️ حذف</button>
+      <button class="btn-save" style="flex:1;margin-top:0" onclick="editCard('${c.id}')">✏️ تعديل</button>
+      <button class="btn-save" style="flex:1;margin-top:0;background:#dc2626" onclick="delCard('${c.id}')">🗑️ حذف</button>
     </div>`;
   document.getElementById('vmodal').classList.add('show');
 }
